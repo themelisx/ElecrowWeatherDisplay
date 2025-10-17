@@ -4,7 +4,8 @@
 #include "configuration.h"
 
 // Position in EEPROM
-#define EEPROM_DAYLIGHT 1
+// First two bytes (0 and 1) are the signature, so we starting from byte 2
+#define EEPROM_DAYLIGHT 2
 
 // Colors
 #define COLOR_WHITE 0xFFFFFF
