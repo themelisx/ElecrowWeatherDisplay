@@ -4,4 +4,5 @@
 .vscode/launch.json
 .vscode/ipch
 
-Code/include/user_setup.h
+**/user_setup.h
+
