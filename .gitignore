@@ -39,3 +39,4 @@
 
 # debug information files
 *.dwo
+Code/include/user_setup.h
