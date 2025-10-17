@@ -7,3 +7,5 @@ Before you start, go to `user_setup.h` and edit the `# EDIT THIS  #` section.
 3) Write your town. You can find supported towns in Open Weather website
 4) Write your API KEY from Open Weather
 also take a look at `configuration.h` file for more settings.
+
+![preview](https://github.com/user-attachments/assets/e0fd58b0-d32e-4d32-a2f2-2b991a0e3065)
