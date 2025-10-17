@@ -22,16 +22,15 @@ void ntp_task(void *pvParameters) {
       ntpIsOk = ntpResult;
       xSemaphoreGive(semaphoreData);
       
-      updateLastUpdate("Updating data...", COLOR_WHITE);
-      xSemaphoreTake(semaphoreData, portMAX_DELAY);
+      updateLastUpdate("Updating data...", COLOR_WHITE);      
       needsUpdate = getData();
       if (needsUpdate) {        
-        valuesNeedsUpdate = true;
-        xSemaphoreGive(semaphoreData);
         debug->println(DEBUG_LEVEL_DEBUG, "Data updated ok");
+        xSemaphoreTake(semaphoreData, portMAX_DELAY);
+        valuesNeedsUpdate = true;
+        xSemaphoreGive(semaphoreData);        
       }
     } else {
-      xSemaphoreGive(semaphoreData);
       vTaskDelay(30000 / portTICK_PERIOD_MS);
     }
   }

@@ -359,7 +359,7 @@ void createTasks() {
     NULL,           // Parameter of the task
     2,              // Priority of the task
     &t_core1_http,  // Task handle to keep track of created task
-    1);             // Pin task to core 1
+    0);             // Pin task to core 0
 
   vTaskSuspend(t_core1_http);
 
@@ -374,7 +374,7 @@ void createTasks() {
 
   vTaskSuspend(t_core1_ntp);
 
-  debug->println(DEBUG_LEVEL_INFO, "Setup completed\nStarting tasks...");
+  debug->println(DEBUG_LEVEL_INFO, "All tasks created\nStarting tasks...");
 
   vTaskResume(t_core1_loop);
   vTaskResume(t_core1_http);
@@ -640,6 +640,8 @@ void updateValues() {
 
   sprintf(tmp_buf, "Updated: %s", rtc.getTime());
   lv_label_set_text(ui_ValueLastUpdate, tmp_buf);
+  
+  debug->println(DEBUG_LEVEL_DEBUG, "Done");
 }
 
 int renderPNGToBuffer(PNGDRAW *pDraw) {
@@ -742,6 +744,7 @@ bool getData() {
         DeserializationError error = deserializeJson(doc, payload);
 
         if (!error) {
+            xSemaphoreTake(semaphoreData, portMAX_DELAY);
             temperature[0] = doc["main"]["temp"];
             temperature[1] = doc["main"]["feels_like"];
             temperature[2] = doc["main"]["temp_min"];
@@ -761,6 +764,8 @@ bool getData() {
                 doc["weather"][0]["icon"].as<String>() +
                 "@4x.png";
             iconUrl.replace("https://", "http://");
+            
+            xSemaphoreGive(semaphoreData);
 
             http.end();
 
@@ -865,7 +870,7 @@ void loop_task(void *pvParameters) {
     vTaskDelay(5 / portTICK_PERIOD_MS);
     lv_timer_handler();
   }
-  debug->println(DEBUG_LEVEL_INFO, "Terminating Audio manager");
+  debug->println(DEBUG_LEVEL_INFO, "Terminating Loop manager");
   vTaskDelete(NULL);
 }
 
@@ -879,39 +884,14 @@ void clock_task(void *pvParameters) {
 
     now = millis();
 
-    #ifdef USE_FM_RADIO
-    if (radioNeedsUpdate) {
-      radioNeedsUpdate = false;
-
-      float currentStation = (float)espNowRadioData.currentFrequency / 100.0;
-      sprintf(tmp_buf, "%0.1f", currentStation);
-      lv_label_set_text(ui_FMRadioName, tmp_buf);
-
-      if (espNowRadioData.rds) {
-        lv_label_set_text(ui_FMRadioRDS, "RDS Available");
-      } else {
-        lv_label_set_text(ui_FMRadioRDS, "RDS is not available");
-      }
-      //espNowRadioData.rssi
-    }
-    #endif
-
-    #ifdef USE_MP3_EXTERNAL
-    if (multimediaNeedsUpdate) {
-      multimediaNeedsUpdate = false;
-      sprintf(tmp_buf, "Dir:%d, file:%d", espNowMp3Data.currentDirectory, espNowMp3Data.currentFile);
-      lv_label_set_text(ui_Mp3Name, tmp_buf);
-      sprintf(tmp_buf, "Pos:%d, total:%d", espNowMp3Data.currentTime, espNowMp3Data.totalTime);
-      lv_label_set_text(ui_MP3Time, tmp_buf);
-    }
-    #endif
-
     if (now > valuesNeedsUpdateCheck + 1000) {
       
       //debug->println(DEBUG_LEVEL_DEBUG, "Checking if we need update");
       valuesNeedsUpdateCheck = now;
       xSemaphoreTake(semaphoreData, portMAX_DELAY);
-      if (ntpIsOk) {
+      bool ntpOk = ntpIsOk;
+      xSemaphoreGive(semaphoreData);
+      if (ntpOk) {
         struct tm timeinfo = rtc.getTimeStruct();
         strftime(tmp_buf, 50, "%a, %d %b %Y", &timeinfo);
         lv_label_set_text(ui_ValueDate, tmp_buf);
@@ -921,12 +901,12 @@ void clock_task(void *pvParameters) {
         lv_label_set_text(ui_ValueTime, tmp_buf);
       }
       if (valuesNeedsUpdate) {
-        valuesNeedsUpdate = false;      
-        xSemaphoreGive(semaphoreData);
         debug->println(DEBUG_LEVEL_DEBUG, "We need update");
+        xSemaphoreTake(semaphoreData, portMAX_DELAY);
+        valuesNeedsUpdate = false;
         updateValues();
-      } else {
         xSemaphoreGive(semaphoreData);
+      } else {
         //debug->println(DEBUG_LEVEL_DEBUG, "No need to update");
       }
     }
@@ -945,5 +925,3 @@ void loop() {
    vTaskDelete(NULL);
 
 }
-
-
