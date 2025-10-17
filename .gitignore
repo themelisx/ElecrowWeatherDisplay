@@ -1,3 +1,5 @@
+user_setup.h
+
 # Prerequisites
 *.d
 
@@ -39,4 +41,3 @@
 
 # debug information files
 *.dwo
-Code/include/user_setup.h
