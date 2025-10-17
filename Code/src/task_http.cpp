@@ -19,17 +19,16 @@ void http_task(void *pvParameters) {
 
   for (;;) {
     debug->println(DEBUG_LEVEL_DEBUG, "Updating data...");
-    updateLastUpdate("Updating data...", COLOR_WHITE);
-    xSemaphoreTake(semaphoreData, portMAX_DELAY);
+    updateLastUpdate("Updating data...", COLOR_WHITE);    
     needsUpdate = getData();
     if (needsUpdate) {        
+      xSemaphoreTake(semaphoreData, portMAX_DELAY);
       valuesNeedsUpdate = true;
       xSemaphoreGive(semaphoreData);
       debug->println(DEBUG_LEVEL_DEBUG, "Data updated ok");
       errors = 0;
       vTaskDelay(300000 / portTICK_PERIOD_MS);
     } else {
-      xSemaphoreGive(semaphoreData);
       debug->println(DEBUG_LEVEL_DEBUG, "Error updating data");
       updateLastUpdate("Error updating data", COLOR_RED);
       errors++;
@@ -40,4 +39,3 @@ void http_task(void *pvParameters) {
     }
   }
 }
-  

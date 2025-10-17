@@ -11,7 +11,7 @@ static void scroll_begin_event(lv_event_t* e)
     if (lv_event_get_code(e) == LV_EVENT_SCROLL_BEGIN) {
         lv_anim_t* a = (lv_anim_t*)lv_event_get_param(e);
         if (a)  a->time = 0;
-     
+
     }
 }
 
