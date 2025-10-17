@@ -2,7 +2,7 @@
 Weather Display for Elecrow panels using Open Weather
 
 Before you build, go to `Code\include\user_setup.h.example` 
-Create a copy of this file and name it "user_setup.h"
+Create a copy of this file and name it `user_setup.h`
 1) Setup your WiFi SSID and the password
 2) Select your timezone
 3) Write your town. You can find supported towns in Open Weather website
