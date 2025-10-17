@@ -5,6 +5,16 @@
 
 #include "ui.h"
 
+static void scroll_begin_event(lv_event_t* e)
+{
+    /*Disable the scroll animations. Triggered when a tab button is clicked */
+    if (lv_event_get_code(e) == LV_EVENT_SCROLL_BEGIN) {
+        lv_anim_t* a = (lv_anim_t*)lv_event_get_param(e);
+        if (a)  a->time = 0;
+
+    }
+}
+
 void event_handler(lv_event_t * e)
 {
     lv_event_code_t code = lv_event_get_code(e);
@@ -25,6 +35,10 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_bg_opa(ui_Screen1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_TabView1 = lv_tabview_create(ui_Screen1, LV_DIR_TOP, 50);
+
+    lv_obj_add_event_cb(lv_tabview_get_content(ui_TabView1), scroll_begin_event,LV_EVENT_SCROLL_BEGIN, NULL);
+    lv_obj_clear_flag(lv_tabview_get_content(ui_TabView1), LV_OBJ_FLAG_SCROLLABLE);
+    
     lv_obj_set_width(ui_TabView1, 800);
     lv_obj_set_height(ui_TabView1, 480);
     lv_obj_set_align(ui_TabView1, LV_ALIGN_CENTER);
