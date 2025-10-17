@@ -1,0 +1,29 @@
+{
+    "files.associations": {
+        "ui.h": "c",
+        "lvgl.h": "c",
+        "ui_helpers.h": "c",
+        "ui_comp.h": "c",
+        "ui_comp_gauge.h": "c",
+        "defines.h": "c",
+        "ui_screen.h": "c",
+        "configuration.h": "c",
+        "optional": "c",
+        "istream": "c",
+        "ostream": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "lv_conf_internal.h": "c"
+    },
+    "idf.adapterTargetName": "esp32",
+    "idf.openOcdConfigs": [
+        "interface/ftdi/esp32_devkitj_v1.cfg",
+        "target/esp32.cfg"
+    ],
+    "idf.pythonInstallPath": "C:\\Users\\theme\\.espressif\\tools\\idf-python\\3.8.7\\python.exe"
+}
