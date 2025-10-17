@@ -1,0 +1,20 @@
+// Notes:
+// Create a copy of this file and name it "user_setup.h"
+// Setup your WiFi SSID and the password
+// Select your timezone
+// Write your town. You can find supported towns in Open Weather website
+// Write your API KEY from Open Weather also take a look at configuration.h file for more settings.
+// 
+// The file "user_setup.h" is in git ignore. Your data will stay local
+
+//#################### EDIT THIS  ###################
+// WiFi
+#define USER_WiFiSSID "MyWiFiSSID"
+#define USER_WiFiPassword "MyWiFiPassword"
+// Clock
+#define USER_TimeZone 2
+// Open Weather
+#define USER_WeatherTown "Thessaloniki"
+#define USER_WeatherAPI "000000000000000000000000000000"
+#define USER_WeatherUnits "metric"
+//#################### end of edits ###################
