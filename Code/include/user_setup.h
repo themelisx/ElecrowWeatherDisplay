@@ -5,7 +5,7 @@
 //#################### EDIT THIS  ###################
 // WiFi
 #define USER_WiFiSSID "MyWiFiSSID"
-#define USER_WiFiPassword "MyWiFiPassword
+#define USER_WiFiPassword "MyWiFiPassword"
 // Clock
 #define USER_TimeZone 2
 // Open Weather
