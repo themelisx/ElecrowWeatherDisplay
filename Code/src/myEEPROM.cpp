@@ -1,3 +1,9 @@
+/**
+ * @author Christos Themelis
+ * @version 1.0.0
+ * @date 2025-10-18
+ */
+
 #include <Arduino.h>
 #include "defines.h"
 

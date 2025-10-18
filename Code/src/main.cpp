@@ -1,3 +1,9 @@
+/**
+ * @author Christos Themelis
+ * @version 1.0.0
+ * @date 2025-10-18
+ */
+
 #include <WiFi.h>
 #include "esp_wifi.h"
 #include <HttpClient.h>
@@ -17,7 +23,7 @@
 
 #include "UI/ui.h"
 
-#include "../lvgl/lvgl.h"
+//#include "../lvgl/lvgl.h"
 
 #include "../include/defines.h"
 #include "../include/debug.h"
@@ -108,9 +114,7 @@ static int val = 100;
 
 static uint32_t screenWidth;
 static uint32_t screenHeight;
-static lv_disp_draw_buf_t draw_buf;
 static lv_color_t disp_draw_buf[800 * 480 / 10];
-static lv_disp_drv_t disp_drv;
 
 Debug *debug;
 Settings *mySettings;
@@ -325,90 +329,85 @@ LGFX lcd;
 
 void createTasks() {
   #ifdef USE_MULTI_THREAD
+    debug->println(DEBUG_LEVEL_INFO, "Creating Tasks...");
 
-  debug->println(DEBUG_LEVEL_INFO, "Creating Tasks...");
+    debug->println(DEBUG_LEVEL_INFO, "Staring up Http client...");
 
-  debug->println(DEBUG_LEVEL_INFO, "Staring up Http client...");
+    xTaskCreatePinnedToCore(
+      loop_task,       // Task function.
+      "Loop_Manager",  // Name of task.
+      10000,          // Stack size of task
+      NULL,           // Parameter of the task
+      0,              // Priority of the task
+      &t_core1_loop,  // Task handle to keep track of created task
+      0);             // Pin task to core 0
 
-  xTaskCreatePinnedToCore(
-    loop_task,       // Task function.
-    "Loop_Manager",  // Name of task.
-    10000,          // Stack size of task
-    NULL,           // Parameter of the task
-    0,              // Priority of the task
-    &t_core1_loop,  // Task handle to keep track of created task
-    0);             // Pin task to core 0
+    vTaskSuspend(t_core1_loop);
 
-  vTaskSuspend(t_core1_loop);
+    xTaskCreatePinnedToCore(
+      clock_task,       // Task function.
+      "CLOCK_Manager",  // Name of task.
+      10000,          // Stack size of task
+      NULL,           // Parameter of the task
+      1,              // Priority of the task
+      &t_core1_clock,  // Task handle to keep track of created task
+      0);             // Pin task to core 0
 
-  xTaskCreatePinnedToCore(
-    clock_task,       // Task function.
-    "CLOCK_Manager",  // Name of task.
-    10000,          // Stack size of task
-    NULL,           // Parameter of the task
-    1,              // Priority of the task
-    &t_core1_clock,  // Task handle to keep track of created task
-    0);             // Pin task to core 0
+    vTaskSuspend(t_core1_clock);
 
-  vTaskSuspend(t_core1_clock);
+    xTaskCreatePinnedToCore(
+      http_task,       // Task function.
+      "HTTP_Manager",  // Name of task.
+      10000,          // Stack size of task
+      NULL,           // Parameter of the task
+      2,              // Priority of the task
+      &t_core1_http,  // Task handle to keep track of created task
+      0);             // Pin task to core 0
 
-  xTaskCreatePinnedToCore(
-    http_task,       // Task function.
-    "HTTP_Manager",  // Name of task.
-    10000,          // Stack size of task
-    NULL,           // Parameter of the task
-    2,              // Priority of the task
-    &t_core1_http,  // Task handle to keep track of created task
-    0);             // Pin task to core 0
+    vTaskSuspend(t_core1_http);
 
-  vTaskSuspend(t_core1_http);
+    xTaskCreatePinnedToCore(
+      ntp_task,       // Task function.
+      "NTP_Manager",  // Name of task.
+      10000,          // Stack size of task
+      NULL,           // Parameter of the task
+      2,              // Priority of the task
+      &t_core1_ntp,  // Task handle to keep track of created task
+      0);             // Pin task to core 0
 
-  xTaskCreatePinnedToCore(
-    ntp_task,       // Task function.
-    "NTP_Manager",  // Name of task.
-    10000,          // Stack size of task
-    NULL,           // Parameter of the task
-    2,              // Priority of the task
-    &t_core1_ntp,  // Task handle to keep track of created task
-    0);             // Pin task to core 0
+    vTaskSuspend(t_core1_ntp);
 
-  vTaskSuspend(t_core1_ntp);
+    debug->println(DEBUG_LEVEL_INFO, "All tasks created\nStarting tasks...");
 
-  debug->println(DEBUG_LEVEL_INFO, "All tasks created\nStarting tasks...");
-
-  vTaskResume(t_core1_loop);
-  vTaskResume(t_core1_http);
-  vTaskResume(t_core1_clock);  
-
-#endif
+    vTaskResume(t_core1_loop);
+    vTaskResume(t_core1_http);
+    vTaskResume(t_core1_clock);  
+  #endif
 }
 
-/* Display flushing */
-void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
+// Display flush callback
+void my_disp_flush(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map)
 {
   uint32_t w = (area->x2 - area->x1 + 1);
-  uint32_t h = (area->y2 - area->y1 + 1);  
+  uint32_t h = (area->y2 - area->y1 + 1);
 
-  //lcd.fillScreen(TFT_WHITE);
-#if (LV_COLOR_16_SWAP != 0)
- lcd.pushImageDMA(area->x1, area->y1, w, h,(lgfx::rgb565_t*)&color_p->full);
-#else
-  lcd.pushImageDMA(area->x1, area->y1, w, h,(lgfx::rgb565_t*)&color_p->full);//
-#endif
+  // px_map είναι raw pixel map (here we assume LV_COLOR_DEPTH == 16 => RGB565)
+  // Cast to the type LGFX expects for pushImageDMA:
+  lcd.pushImageDMA(area->x1, area->y1, w, h, (lgfx::rgb565_t*)px_map);
 
-  lv_disp_flush_ready(disp);
-
+  /* Tell LVGL we're done */
+  lv_display_flush_ready(disp);
 }
 
-void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
+
+/* Input read callback — LVGL v9 signature */
+void my_touchpad_read(lv_indev_t * indev, lv_indev_data_t * data)
 {
   if (touch_has_signal())
   {
     if (touch_touched())
     {
       data->state = LV_INDEV_STATE_PR;
-
-      /*Set the coordinates*/
       data->point.x = touch_last_x;
       data->point.y = touch_last_y;
       #ifndef MODE_RELEASE
@@ -443,23 +442,22 @@ void setupDisplay() {
   screenWidth = lcd.width();
   screenHeight = lcd.height();
 
-  lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, screenWidth * screenHeight / 10);
+  lv_display_t * disp = lv_display_create(screenWidth, screenHeight);
 
-  /* Initialize the display */
-  lv_disp_drv_init(&disp_drv);
-  /* Change the following line to your display resolution */
-  disp_drv.hor_res = screenWidth;
-  disp_drv.ver_res = screenHeight;
-  disp_drv.flush_cb = my_disp_flush;
-  disp_drv.draw_buf = &draw_buf;
-  lv_disp_drv_register(&disp_drv);
+  static lv_color_t *disp_draw_buf = (lv_color_t *)malloc(screenWidth * 10 * sizeof(lv_color_t));
 
-  /* Initialize the (dummy) input device driver */
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init(&indev_drv);
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = my_touchpad_read;
-  lv_indev_drv_register(&indev_drv);
+  lv_display_set_buffers(disp,
+                        disp_draw_buf,
+                        NULL,
+                        screenWidth * 10 * sizeof(lv_color_t),
+                        LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+  lv_display_set_flush_cb(disp, my_disp_flush);
+
+  lv_indev_t * indev = lv_indev_create();
+  lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+  lv_indev_set_read_cb(indev, my_touchpad_read);
+
 #ifdef TFT_BL
   pinMode(TFT_BL, OUTPUT);
   digitalWrite(TFT_BL, HIGH);
@@ -704,11 +702,15 @@ void downloadImageToMemory(const char *url) {
               if (decodePngToRgb565(imageBuffer, bytesRead)) {
                   int w = png.getWidth();
                   int h = png.getHeight();
-                  img_dsc.header.always_zero = 0;
+                  
+                  img_dsc.header.magic = LV_IMAGE_HEADER_MAGIC;
                   img_dsc.header.w = w;
                   img_dsc.header.h = h;
+                  img_dsc.header.stride = w * 2;
+                  img_dsc.header.reserved_2 = 0;                  
+                  img_dsc.header.cf = LV_COLOR_FORMAT_RGB565;
+
                   img_dsc.data_size = bytesRead;
-                  img_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
                   img_dsc.data = (const uint8_t *)rgb565_buffer;
 
                   lv_img_set_src(ui_Image1, &img_dsc);
@@ -866,8 +868,10 @@ void loop_task(void *pvParameters) {
   debug->print(DEBUG_LEVEL_INFO, "Loop manager: Task running on core ");
   debug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
 
+  //lv_tick_set_cb(millis);
+
   while (1) {
-    vTaskDelay(5 / portTICK_PERIOD_MS);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
     lv_timer_handler();
   }
   debug->println(DEBUG_LEVEL_INFO, "Terminating Loop manager");

@@ -32,10 +32,8 @@ class Debug {
     void print(int debugLevel, long long n, int base);
     void print(int debugLevel, unsigned long long n, int base);
     void print(int debugLevel, double n, int digits);    
-    #ifdef ESP32
-      void print(int debugLevel, const Printable& x);
-      void print(int debugLevel, struct tm * timeinfo, const char * format);
-    #endif
+    void print(int debugLevel, const Printable& x);
+    void print(int debugLevel, struct tm * timeinfo, const char * format);
 
     void println(int debugLevel, const __FlashStringHelper *ifsh);
     void println(int debugLevel, const String &s);
@@ -51,10 +49,8 @@ class Debug {
     void println(int debugLevel, unsigned long long num, int base);
     void println(int debugLevel, double num, int digits);
     
-    #ifdef ESP32
-      void println(int debugLevel, const Printable& x);
-      void println(int debugLevel, struct tm * timeinfo, const char * format);
-    #endif
+    void println(int debugLevel, const Printable& x);
+    void println(int debugLevel, struct tm * timeinfo, const char * format);
 
 };
 

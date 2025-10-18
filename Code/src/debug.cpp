@@ -1,3 +1,9 @@
+/**
+ * @author Christos Themelis
+ * @version 1.0.0
+ * @date 2025-10-18
+ */
+
 #include <Arduino.h>
 #include "debug.h"
 
@@ -185,7 +191,6 @@ void Debug::println(int debugLevel, double num, int digits) {
     }
 }
 
-#ifdef ESP32
 void Debug::println(int debugLevel, const Printable& x) {
     if (debugLevel <= this->debugLevel) {
         Serial.println(x);
@@ -197,4 +202,3 @@ void Debug::println(int debugLevel, struct tm * timeinfo, const char * format) {
         Serial.println(timeinfo, format);
     }
 }
-#endif
