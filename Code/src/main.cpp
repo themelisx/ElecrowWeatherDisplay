@@ -609,17 +609,15 @@ void updateValues() {
   sprintf(tmp_buf, "%0.1f °C", temperature[0]);
   lv_label_set_text(ui_ValueTemperature, tmp_buf);
 
-  sprintf(tmp_buf, "Feels %0.1f °C", temperature[1]);
+  sprintf(tmp_buf, "%0.1f °C", temperature[1]);
   lv_label_set_text(ui_ValueFeelsLike, tmp_buf);
 
   //sprintf(tmp_buf, "Min : %0.1f °C", temperature[2]);
   timestampToTime(sun[0], time_str, sizeof(time_str));
-  sprintf(tmp_buf, "Sunrise: %s", time_str);
-  lv_label_set_text(ui_ValueTempMin, tmp_buf);
+  lv_label_set_text(ui_ValueSunrise, time_str);
 
   timestampToTime(sun[1], time_str, sizeof(time_str));
-  sprintf(tmp_buf, "Sunset: %s", time_str);
-  lv_label_set_text(ui_ValueTempMax, tmp_buf);
+  lv_label_set_text(ui_ValueSunset, time_str);
 
   sprintf(tmp_buf, "%d %%", humidity);
   lv_label_set_text(ui_ValueHumidity, tmp_buf);
@@ -634,9 +632,6 @@ void updateValues() {
 
   sprintf(tmp_buf, "Direction: %s", convertDegreesToDirection(windDirection));
   lv_label_set_text(ui_ValueWindDirection, tmp_buf);
-
-  sprintf(tmp_buf, "%s (visibility %dm)", description.c_str(), visibility);
-  lv_label_set_text(ui_ValueDescription, tmp_buf);
 
   sprintf(tmp_buf, "Updated: %s", rtc.getTime());
   lv_label_set_text(ui_ValueLastUpdate, tmp_buf);
@@ -893,11 +888,13 @@ void clock_task(void *pvParameters) {
       xSemaphoreGive(semaphoreData);
       if (ntpOk) {
         struct tm timeinfo = rtc.getTimeStruct();
+        // TODO: Add to settings "Date format"
         strftime(tmp_buf, 50, "%a, %d %b %Y", &timeinfo);
         lv_label_set_text(ui_ValueDate, tmp_buf);
 
-        strftime(tmp_buf, 50, "%H:%M", &timeinfo);
-        //sprintf(tmp_buf, "%s", rtc.getTime());      
+        // TODO: Add to settings "Hour format"
+        strftime(tmp_buf, 50, "%H:%M", &timeinfo);      // 24h format
+        //strftime(tmp_buf, 50, "%I:%M %p", &timeinfo); // 12h format
         lv_label_set_text(ui_ValueTime, tmp_buf);
       }
       if (valuesNeedsUpdate) {
