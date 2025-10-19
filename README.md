@@ -12,4 +12,4 @@ Create a copy of this file and name it `user_setup.h`
 
 also take a look at `configuration.h` file for more project settings.
 
-![preview]([https://github.com/user-attachments/assets/3d4137ee-58e7-45ed-a71c-feb7624bc52d](https://github.com/themelisx/ElecrowWeatherDisplay/blob/main/preview.jpg))
+![preview](https://github.com/user-attachments/assets/be907afb-f6ec-43aa-ad8b-6745f8e0762b)
