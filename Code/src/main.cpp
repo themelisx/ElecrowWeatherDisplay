@@ -646,7 +646,7 @@ void updateValues() {
 
 int renderPNGToBuffer(PNGDRAW *pDraw) {
     uint16_t lineBuffer[IMG_WIDTH]; 
-    png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0x0000);
+    png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_LITTLE_ENDIAN, 0x0000);
 
     for (int x = 0; x < pDraw->iWidth; x++) {
         int dst_index = (pDraw->y * IMG_WIDTH + x);
