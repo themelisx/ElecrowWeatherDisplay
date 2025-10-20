@@ -129,9 +129,9 @@ public:
 
       cfg.port = 0;              
       cfg.freq_write = 80000000; 
-      cfg.pin_wr = GPIO_NUM_18;
-      cfg.pin_rd = GPIO_NUM_48;
-      cfg.pin_rs = GPIO_NUM_45;
+      // cfg.pin_wr = GPIO_NUM_18;
+      // cfg.pin_rd = GPIO_NUM_48;
+      // cfg.pin_rs = GPIO_NUM_45;
 
       cfg.pin_d0 = GPIO_NUM_47;
       cfg.pin_d1 = GPIO_NUM_21;
