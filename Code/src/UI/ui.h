@@ -24,6 +24,7 @@ extern "C" {
 
 #include "ui_helpers.h"
 #include "ui_events.h"
+#include "../fonts/fonts.h"
 
 // SCREEN: ui_Screen1
 void ui_Screen1_screen_init(void);

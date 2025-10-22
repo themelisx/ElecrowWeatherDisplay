@@ -28,11 +28,10 @@
   #include "../include/tasks.h"
 #endif
 
-/////////////////////////////////
-// User setup 
-/////////////////////////////////
+////////////////
+// User setup // 
+////////////////
 #include "../include/user_setup.h"
-
 char WiFiSSID[] = USER_WiFiSSID;
 char WiFiPassword[] = USER_WiFiPassword;
 // time zone  
@@ -42,6 +41,18 @@ String town = USER_WeatherTown;
 String myAPI = USER_WeatherAPI;
 String units = USER_WeatherUnits; 
 /////////////////////////////////
+
+#if defined(LANG_EN)
+static const char *days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+static const char *months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+#elif defined(LANG_GR)
+static const char *days[] = {"Κυρ", "Δευ", "Τρι", "Τετ", "Πεμ", "Παρ", "Σαβ"};
+static const char *months[] = {"Ιαν", "Φεβ", "Μαρ", "Απρ", "Μαι", "Ιουν",
+                               "Ιουλ", "Αυγ", "Σεπ", "Οκτ", "Νοε", "Δεκ"};
+#else
+    #error "No Language defined!"
+#endif
 
 #define IMG_WIDTH 200
 #define IMG_HEIGHT 200
@@ -555,14 +566,28 @@ const char* convertDegreesToDirection(int degrees) {
 
     if (degrees < 0) degrees += 360;
 
-    if (degrees >= 337.5 || degrees < 22.5)  return "N";
-    if (degrees >= 22.5 && degrees < 67.5)   return "NE";
-    if (degrees >= 67.5 && degrees < 112.5)  return "E";
-    if (degrees >= 112.5 && degrees < 157.5) return "SE";
-    if (degrees >= 157.5 && degrees < 202.5) return "S";
-    if (degrees >= 202.5 && degrees < 247.5) return "SW";
-    if (degrees >= 247.5 && degrees < 292.5) return "W";
-    if (degrees >= 292.5 && degrees < 337.5) return "NW";
+    #if defined(LANG_EN)
+      if (degrees >= 337.5 || degrees < 22.5)  return "N";
+      if (degrees >= 22.5 && degrees < 67.5)   return "NE";
+      if (degrees >= 67.5 && degrees < 112.5)  return "E";
+      if (degrees >= 112.5 && degrees < 157.5) return "SE";
+      if (degrees >= 157.5 && degrees < 202.5) return "S";
+      if (degrees >= 202.5 && degrees < 247.5) return "SW";
+      if (degrees >= 247.5 && degrees < 292.5) return "W";
+      if (degrees >= 292.5 && degrees < 337.5) return "NW";
+    #elif defined(LANG_GR)
+      if (degrees >= 337.5 || degrees < 22.5)  return "Β";
+      if (degrees >= 22.5 && degrees < 67.5)   return "ΒΑ";
+      if (degrees >= 67.5 && degrees < 112.5)  return "Α";
+      if (degrees >= 112.5 && degrees < 157.5) return "ΝΑ";
+      if (degrees >= 157.5 && degrees < 202.5) return "Ν";
+      if (degrees >= 202.5 && degrees < 247.5) return "ΝΔ";
+      if (degrees >= 247.5 && degrees < 292.5) return "Δ";
+      if (degrees >= 292.5 && degrees < 337.5) return "ΒΔ";
+    #else
+        #error "No Language defined!"
+    #endif
+    
 
     return "Unknown"; // In case something unexpected happens
 }
@@ -625,16 +650,28 @@ void updateValues() {
   sprintf(tmp_buf, "%d hPa", pressure);
   lv_label_set_text(ui_ValuePressure, tmp_buf);
 
-  sprintf(tmp_buf, "%0.1f m/s", windSpeed);
-  lv_label_set_text(ui_ValueWindSpeed, tmp_buf);
-  sprintf(tmp_buf, "Wind: %d Bf", windSpeedToBeaufort(windSpeed));
-  lv_label_set_text(ui_Label2, tmp_buf);
+  #if defined(LANG_EN)
+    sprintf(tmp_buf, "%0.1f m/s", windSpeed);
+    lv_label_set_text(ui_ValueWindSpeed, tmp_buf);
+    sprintf(tmp_buf, "Wind: %d Bf", windSpeedToBeaufort(windSpeed));
+    lv_label_set_text(ui_Label2, tmp_buf);
 
-  sprintf(tmp_buf, "Direction: %s", convertDegreesToDirection(windDirection));
-  lv_label_set_text(ui_ValueWindDirection, tmp_buf);
+    sprintf(tmp_buf, "Direction: %s", convertDegreesToDirection(windDirection));
+    lv_label_set_text(ui_ValueWindDirection, tmp_buf);
 
-  sprintf(tmp_buf, "Updated: %s", rtc.getTime());
-  lv_label_set_text(ui_ValueLastUpdate, tmp_buf);
+    sprintf(tmp_buf, "Updated: %s", rtc.getTime());
+    lv_label_set_text(ui_ValueLastUpdate, tmp_buf);
+  #elif defined(LANG_GR)
+    lv_label_set_text(ui_Label2, "Άνεμος");
+    sprintf(tmp_buf, "%d Bf", windSpeedToBeaufort(windSpeed));
+    lv_label_set_text(ui_ValueWindSpeed, tmp_buf);
+
+    sprintf(tmp_buf, "Κατεύθυνση: %s", convertDegreesToDirection(windDirection));
+    lv_label_set_text(ui_ValueWindDirection, tmp_buf);
+
+    sprintf(tmp_buf, "Ενημερώθηκε: %s", rtc.getTime());
+    lv_label_set_text(ui_ValueLastUpdate, tmp_buf);
+  #endif  
   
   debug->println(DEBUG_LEVEL_DEBUG, "Done");
 }
@@ -869,6 +906,17 @@ void loop_task(void *pvParameters) {
   vTaskDelete(NULL);
 }
 
+void format_datetime(char *buf, size_t size, const struct tm *timeinfo) {
+    char tmp[64];
+    strftime(tmp, sizeof(tmp), "%a, %d %b %Y", timeinfo);
+
+    int wday = timeinfo->tm_wday; // 0=Κυρ ... 6=Σαβ
+    int mon  = timeinfo->tm_mon;  // 0=Ιαν ... 11=Δεκ
+
+    // replace %a and %b with selected language
+    snprintf(buf, size, "%s, %02d %s %d", days[wday], timeinfo->tm_mday, months[mon], 1900 + timeinfo->tm_year);
+}
+
 void clock_task(void *pvParameters) {
 
   debug->print(DEBUG_LEVEL_INFO, "Clock manager: Task running on core ");
@@ -889,8 +937,9 @@ void clock_task(void *pvParameters) {
       if (ntpOk) {
         struct tm timeinfo = rtc.getTimeStruct();
         // TODO: Add to settings "Date format"
-        strftime(tmp_buf, 50, "%a, %d %b %Y", &timeinfo);
-        lv_label_set_text(ui_ValueDate, tmp_buf);
+        char date_str[50];
+        format_datetime(date_str, sizeof(date_str), &timeinfo);
+        lv_label_set_text(ui_ValueDate, date_str);
 
         // TODO: Add to settings "Hour format"
         strftime(tmp_buf, 50, "%H:%M", &timeinfo);      // 24h format
