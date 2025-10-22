@@ -3,8 +3,8 @@
 // LVGL version: 9.1.0
 // Project name: weather_only
 
-#ifndef _WEATHER_ONLY_UI_HELPERS_H
-#define _WEATHER_ONLY_UI_HELPERS_H
+#ifndef _SQUARELINE_PROJECT_UI_HELPERS_H
+#define _SQUARELINE_PROJECT_UI_HELPERS_H
 
 #include "ui.h"
 

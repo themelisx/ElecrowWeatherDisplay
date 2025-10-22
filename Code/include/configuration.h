@@ -5,12 +5,19 @@
 //////////////////
 // Running mode //
 //////////////////
+
+// Debug
 //#define MODE_DEBUG_FULL
 #define MODE_DEBUG
 //#define MODE_RELEASE_INFO
 //#define MODE_RELEASE
 
+// Multithread
 #define USE_MULTI_THREAD
+
+// Language
+//#define LANG_EN
+#define LANG_GR
 
 ////////////
 // EEPROM //

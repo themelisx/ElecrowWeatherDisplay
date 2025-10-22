@@ -5,6 +5,7 @@
 
 #include "ui.h"
 #include <lvgl.h>
+#include "../include/configuration.h"
 
 static void scroll_begin_event(lv_event_t* e)
 {
@@ -54,18 +55,22 @@ void ui_Screen1_screen_init(void)
 
     lv_obj_set_style_text_color(lv_tabview_get_tab_bar(ui_TabView1), lv_color_hex(0xFFFFFF),
                                 LV_PART_ITEMS | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(lv_tabview_get_tab_bar(ui_TabView1), 255,  LV_PART_ITEMS | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(lv_tabview_get_tab_bar(ui_TabView1), &lv_font_montserrat_18,
-    //                           LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(lv_tabview_get_tab_btns(ui_TabView1), 255,  LV_PART_ITEMS | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(lv_tabview_get_tab_btns(ui_TabView1), &lv_font_arial_18,
+                               LV_PART_ITEMS | LV_STATE_DEFAULT);
 
+    #if defined(LANG_EN)
     ui_TabPageWeather = lv_tabview_add_tab(ui_TabView1, "Weather");
+    #elif defined(LANG_GR)
+    ui_TabPageWeather = lv_tabview_add_tab(ui_TabView1, "Καιρός");
+    #endif   
 
     ui_Container1 = lv_obj_create(ui_TabPageWeather);
     lv_obj_remove_style_all(ui_Container1);
     lv_obj_set_width(ui_Container1, 200);
-    lv_obj_set_height(ui_Container1, 240);
+    lv_obj_set_height(ui_Container1, 390);
     lv_obj_set_x(ui_Container1, -284);
-    lv_obj_set_y(ui_Container1, -77);
+    lv_obj_set_y(ui_Container1, 0);
     lv_obj_set_align(ui_Container1, LV_ALIGN_CENTER);
     lv_obj_set_flex_flow(ui_Container1, LV_FLEX_FLOW_COLUMN);
     lv_obj_set_flex_align(ui_Container1, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
@@ -77,11 +82,15 @@ void ui_Screen1_screen_init(void)
     ui_Label1 = lv_label_create(ui_Container1);
     lv_obj_set_width(ui_Label1, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label1, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);
+    lv_obj_set_align(ui_Label1, LV_ALIGN_CENTER);    
+    #if defined(LANG_EN)
     lv_label_set_text(ui_Label1, "Temperature");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Label1, "Θερμοκρασία");
+    #endif
     lv_obj_set_style_text_color(ui_Label1, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label1, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_Label1, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label1, &lv_font_arial_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ValueTemperature = lv_label_create(ui_Container1);
     lv_obj_set_width(ui_ValueTemperature, LV_SIZE_CONTENT);   /// 1
@@ -90,40 +99,93 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_ValueTemperature, "--.- °C");
     lv_obj_set_style_text_color(ui_ValueTemperature, lv_color_hex(0x17ABF7), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValueTemperature, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueTemperature, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_ValueFeelsLike = lv_label_create(ui_Container1);
-    lv_obj_set_width(ui_ValueFeelsLike, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_ValueFeelsLike, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_ValueFeelsLike, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ValueFeelsLike, "Feels like --.-");
-    lv_obj_set_style_text_color(ui_ValueFeelsLike, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_ValueFeelsLike, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueFeelsLike, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueTemperature, &lv_font_arial_48, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Panel1 = lv_obj_create(ui_Container1);
     lv_obj_set_height(ui_Panel1, 1);
     lv_obj_set_width(ui_Panel1, lv_pct(90));
+    lv_obj_set_x(ui_Panel1, 0);
+    lv_obj_set_y(ui_Panel1, -8);
     lv_obj_set_align(ui_Panel1, LV_ALIGN_CENTER);
     lv_obj_remove_flag(ui_Panel1, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
 
-    ui_ValueTempMin = lv_label_create(ui_Container1);
-    lv_obj_set_width(ui_ValueTempMin, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_ValueTempMin, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_ValueTempMin, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ValueTempMin, "Min. Temp. : --.- C");
-    lv_obj_set_style_text_color(ui_ValueTempMin, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_ValueTempMin, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueTempMin, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_Label3 = lv_label_create(ui_Container1);
+    lv_obj_set_width(ui_Label3, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label3, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_Label3, LV_ALIGN_CENTER);    
+    #if defined(LANG_EN)
+    lv_label_set_text(ui_Label3, "Feels like");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Label3, "Αισθητή");
+    #endif
+    lv_obj_set_style_text_color(ui_Label3, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label3, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label3, &lv_font_arial_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
-    ui_ValueTempMax = lv_label_create(ui_Container1);
-    lv_obj_set_width(ui_ValueTempMax, LV_SIZE_CONTENT);   /// 1
-    lv_obj_set_height(ui_ValueTempMax, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_ValueTempMax, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ValueTempMax, "Max. Temp. : --.- C");
-    lv_obj_set_style_text_color(ui_ValueTempMax, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_ValueTempMax, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueTempMax, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    ui_ValueFeelsLike = lv_label_create(ui_Container1);
+    lv_obj_set_width(ui_ValueFeelsLike, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_ValueFeelsLike, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_ValueFeelsLike, -2);
+    lv_obj_set_y(ui_ValueFeelsLike, 57);
+    lv_obj_set_align(ui_ValueFeelsLike, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_ValueFeelsLike, "--.- °C");
+    lv_obj_set_style_text_color(ui_ValueFeelsLike, lv_color_hex(0x17ABF7), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_ValueFeelsLike, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueFeelsLike, &lv_font_arial_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Panel4 = lv_obj_create(ui_Container1);
+    lv_obj_set_height(ui_Panel4, 1);
+    lv_obj_set_width(ui_Panel4, lv_pct(90));
+    lv_obj_set_x(ui_Panel4, 0);
+    lv_obj_set_y(ui_Panel4, -8);
+    lv_obj_set_align(ui_Panel4, LV_ALIGN_CENTER);
+    lv_obj_clear_flag(ui_Panel4, LV_OBJ_FLAG_SCROLLABLE);      /// Flags
+
+    ui_Label4 = lv_label_create(ui_Container1);
+    lv_obj_set_width(ui_Label4, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label4, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_Label4, LV_ALIGN_CENTER);    
+    #if defined(LANG_EN)
+    lv_label_set_text(ui_Label4, "Sunrise");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Label4, "Ανατολή");
+    #endif
+    lv_obj_set_style_text_color(ui_Label4, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label4, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label4, &lv_font_arial_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_ValueSunrise = lv_label_create(ui_Container1);
+    lv_obj_set_width(ui_ValueSunrise, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_ValueSunrise, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_x(ui_ValueSunrise, 14);
+    lv_obj_set_y(ui_ValueSunrise, 205);
+    lv_obj_set_align(ui_ValueSunrise, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_ValueSunrise, "--:--");
+    lv_obj_set_style_text_color(ui_ValueSunrise, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_ValueSunrise, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueSunrise, &lv_font_arial_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Label5 = lv_label_create(ui_Container1);
+    lv_obj_set_width(ui_Label5, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_Label5, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_Label5, LV_ALIGN_CENTER);    
+    #if defined(LANG_EN)
+    lv_label_set_text(ui_Label5, "Sunset");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Label5, "Δύση");
+    #endif
+    lv_obj_set_style_text_color(ui_Label5, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_Label5, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label5, &lv_font_arial_24, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_ValueSunset = lv_label_create(ui_Container1);
+    lv_obj_set_width(ui_ValueSunset, LV_SIZE_CONTENT);   /// 1
+    lv_obj_set_height(ui_ValueSunset, LV_SIZE_CONTENT);    /// 1
+    lv_obj_set_align(ui_ValueSunset, LV_ALIGN_CENTER);
+    lv_label_set_text(ui_ValueSunset, "--:--");
+    lv_obj_set_style_text_color(ui_ValueSunset, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_ValueSunset, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueSunset, &lv_font_arial_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Container2 = lv_obj_create(ui_TabPageWeather);
     lv_obj_remove_style_all(ui_Container2);
@@ -143,10 +205,14 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_width(ui_Humidity, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Humidity, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Humidity, LV_ALIGN_CENTER);
+    #if defined(LANG_EN)
     lv_label_set_text(ui_Humidity, "Humidity");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Humidity, "Υγρασία");
+    #endif
     lv_obj_set_style_text_color(ui_Humidity, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Humidity, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_Humidity, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Humidity, &lv_font_arial_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ValueHumidity = lv_label_create(ui_Container2);
     lv_obj_set_width(ui_ValueHumidity, LV_SIZE_CONTENT);   /// 1
@@ -155,7 +221,7 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_ValueHumidity, "--%");
     lv_obj_set_style_text_color(ui_ValueHumidity, lv_color_hex(0x17ABF7), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValueHumidity, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueHumidity, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueHumidity, &lv_font_arial_48, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Panel3 = lv_obj_create(ui_Container2);
     lv_obj_set_height(ui_Panel3, 1);
@@ -167,10 +233,14 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_width(ui_Pressure, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Pressure, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Pressure, LV_ALIGN_CENTER);
+    #if defined(LANG_EN)
     lv_label_set_text(ui_Pressure, "Pressure");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Pressure, "Πίεση");
+    #endif
     lv_obj_set_style_text_color(ui_Pressure, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Pressure, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_Pressure, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Pressure, &lv_font_arial_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ValuePressure = lv_label_create(ui_Container2);
     lv_obj_set_width(ui_ValuePressure, LV_SIZE_CONTENT);   /// 1
@@ -179,7 +249,7 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_ValuePressure, "---- hpa");
     lv_obj_set_style_text_color(ui_ValuePressure, lv_color_hex(0x17ABF7), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValuePressure, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValuePressure, &lv_font_montserrat_40, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValuePressure, &lv_font_arial_40, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Panel2 = lv_obj_create(ui_Container2);
     lv_obj_set_height(ui_Panel2, 1);
@@ -191,10 +261,15 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_width(ui_Label2, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label2, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_Label2, LV_ALIGN_CENTER);
+    
+    #if defined(LANG_EN)
     lv_label_set_text(ui_Label2, "Wind");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_Label2, "Άνεμος");
+    #endif
     lv_obj_set_style_text_color(ui_Label2, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_Label2, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_Label2, &lv_font_montserrat_26, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_Label2, &lv_font_arial_26, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ValueWindSpeed = lv_label_create(ui_Container2);
     lv_obj_set_width(ui_ValueWindSpeed, LV_SIZE_CONTENT);   /// 1
@@ -203,52 +278,20 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_ValueWindSpeed, "-- m/s");
     lv_obj_set_style_text_color(ui_ValueWindSpeed, lv_color_hex(0x17ABF7), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValueWindSpeed, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueWindSpeed, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueWindSpeed, &lv_font_arial_48, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ValueWindDirection = lv_label_create(ui_Container2);
     lv_obj_set_width(ui_ValueWindDirection, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_ValueWindDirection, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_align(ui_ValueWindDirection, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ValueWindDirection, "Direction: ---°");
+    lv_obj_set_align(ui_ValueWindDirection, LV_ALIGN_CENTER);    
+    #if defined(LANG_EN)
+    lv_label_set_text(ui_ValueWindDirection, "Direction: --");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_ValueWindDirection, "Κατεύθυνση: --");
+    #endif
     lv_obj_set_style_text_color(ui_ValueWindDirection, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValueWindDirection, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueWindDirection, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_Container3 = lv_obj_create(ui_TabPageWeather);
-    lv_obj_remove_style_all(ui_Container3);
-    lv_obj_set_width(ui_Container3, 550);
-    lv_obj_set_height(ui_Container3, 65);
-    lv_obj_set_x(ui_Container3, -110);
-    lv_obj_set_y(ui_Container3, 161);
-    lv_obj_set_align(ui_Container3, LV_ALIGN_CENTER);
-    lv_obj_set_flex_flow(ui_Container3, LV_FLEX_FLOW_COLUMN);
-    lv_obj_set_flex_align(ui_Container3, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
-    lv_obj_remove_flag(ui_Container3, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_remove_flag(ui_Container3, LV_OBJ_FLAG_SCROLLABLE);
-    lv_obj_set_style_pad_row(ui_Container3, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_pad_column(ui_Container3, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_ValueLastUpdate = lv_label_create(ui_Container3);
-    lv_obj_set_width(ui_ValueLastUpdate, 559);
-    lv_obj_set_height(ui_ValueLastUpdate, 24);
-    lv_obj_set_x(ui_ValueLastUpdate, 58);
-    lv_obj_set_y(ui_ValueLastUpdate, -26);
-    lv_obj_set_align(ui_ValueLastUpdate, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ValueLastUpdate, "Last update: --/--/----");
-    lv_obj_set_style_text_color(ui_ValueLastUpdate, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_ValueLastUpdate, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueLastUpdate, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-
-    ui_ValueDescription = lv_label_create(ui_Container3);
-    lv_obj_set_width(ui_ValueDescription, 559);
-    lv_obj_set_height(ui_ValueDescription, 24);
-    lv_obj_set_x(ui_ValueDescription, 58);
-    lv_obj_set_y(ui_ValueDescription, -26);
-    lv_obj_set_align(ui_ValueDescription, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_ValueDescription, "Description");
-    lv_obj_set_style_text_color(ui_ValueDescription, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
-    lv_obj_set_style_text_opa(ui_ValueDescription, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueDescription, &lv_font_montserrat_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueWindDirection, &lv_font_arial_20, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Image1 = lv_image_create(ui_TabPageWeather);
     lv_obj_set_width(ui_Image1, LV_SIZE_CONTENT);   /// 1
@@ -268,7 +311,7 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_ValueDate, "--- --/--/----");
     lv_obj_set_style_text_color(ui_ValueDate, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValueDate, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueDate, &lv_font_montserrat_40, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueDate, &lv_font_arial_40, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_ValueTime = lv_label_create(ui_TabPageWeather);
     lv_obj_set_width(ui_ValueTime, LV_SIZE_CONTENT);   /// 1
@@ -279,16 +322,40 @@ void ui_Screen1_screen_init(void)
     lv_label_set_text(ui_ValueTime, "--:--");
     lv_obj_set_style_text_color(ui_ValueTime, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_ValueTime, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
-    //lv_obj_set_style_text_font(ui_ValueTime, &lv_font_montserrat_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueTime, &lv_font_arial_48, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_ValueLastUpdate = lv_label_create(ui_TabPageWeather);
+    lv_obj_set_width(ui_ValueLastUpdate, LV_SIZE_CONTENT);   /// 559
+    lv_obj_set_height(ui_ValueLastUpdate, LV_SIZE_CONTENT);    /// 24
+    lv_obj_set_x(ui_ValueLastUpdate, 0);
+    lv_obj_set_y(ui_ValueLastUpdate, 179);
+    lv_obj_set_align(ui_ValueLastUpdate, LV_ALIGN_CENTER);
+    #if defined(LANG_EN)
+    lv_label_set_text(ui_ValueLastUpdate, "Last update: --/--/----");
+    #elif defined(LANG_GR)
+    lv_label_set_text(ui_ValueLastUpdate, "Ενημερώθηκε στις: --/--/----");
+    #endif
+    lv_obj_set_style_text_color(ui_ValueLastUpdate, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_opa(ui_ValueLastUpdate, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_ValueLastUpdate, &lv_font_arial_20, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    #if defined(LANG_EN)
     ui_TabPageSettings = lv_tabview_add_tab(ui_TabView1, "Settings");
+    #elif defined(LANG_GR)
+    ui_TabPageSettings = lv_tabview_add_tab(ui_TabView1, "Ρυθμίσεις");
+    #endif
 
     ui_DayLight = lv_checkbox_create(ui_TabPageSettings);
+    #if defined(LANG_EN)
     lv_checkbox_set_text(ui_DayLight, "Day light (summer time)");
+    #elif defined(LANG_GR)
+    lv_checkbox_set_text(ui_DayLight, "Θερινή ώρα");
+    #endif
+    lv_obj_set_style_text_font(ui_DayLight, &lv_font_arial_20, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_width(ui_DayLight, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_DayLight, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_DayLight, -250);
-    lv_obj_set_y(ui_DayLight, -175);
+    lv_obj_set_x(ui_DayLight, -257);
+    lv_obj_set_y(ui_DayLight, -168);
     lv_obj_set_align(ui_DayLight, LV_ALIGN_CENTER);
     lv_obj_add_flag(ui_DayLight, LV_OBJ_FLAG_SCROLL_ON_FOCUS);     /// Flags
     lv_obj_set_style_text_color(ui_DayLight, lv_color_hex(0xFFFFFF), LV_PART_MAIN | LV_STATE_DEFAULT);

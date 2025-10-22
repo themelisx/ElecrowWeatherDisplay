@@ -3,8 +3,8 @@
 // LVGL version: 9.1.0
 // Project name: weather_only
 
-#ifndef _WEATHER_ONLY_UI_H
-#define _WEATHER_ONLY_UI_H
+#ifndef _SQUARELINE_PROJECT_UI_H
+#define _SQUARELINE_PROJECT_UI_H
 
 #if defined __has_include
 #if __has_include("lvgl.h")
@@ -19,6 +19,8 @@
 #endif
 
 #include "ui_helpers.h"
+#include "ui_events.h"
+#include "../fonts/fonts.h"
 
 // SCREEN: ui_Screen1
 void ui_Screen1_screen_init(void);
@@ -28,10 +30,14 @@ extern lv_obj_t * ui_TabPageWeather;
 extern lv_obj_t * ui_Container1;
 extern lv_obj_t * ui_Label1;
 extern lv_obj_t * ui_ValueTemperature;
-extern lv_obj_t * ui_ValueFeelsLike;
 extern lv_obj_t * ui_Panel1;
-extern lv_obj_t * ui_ValueTempMin;
-extern lv_obj_t * ui_ValueTempMax;
+extern lv_obj_t * ui_Label3;
+extern lv_obj_t * ui_ValueFeelsLike;
+extern lv_obj_t * ui_Panel4;
+extern lv_obj_t * ui_Label4;
+extern lv_obj_t * ui_ValueSunrise;
+extern lv_obj_t * ui_Label5;
+extern lv_obj_t * ui_ValueSunset;
 extern lv_obj_t * ui_Container2;
 extern lv_obj_t * ui_Humidity;
 extern lv_obj_t * ui_ValueHumidity;
@@ -42,12 +48,10 @@ extern lv_obj_t * ui_Panel2;
 extern lv_obj_t * ui_Label2;
 extern lv_obj_t * ui_ValueWindSpeed;
 extern lv_obj_t * ui_ValueWindDirection;
-extern lv_obj_t * ui_Container3;
-extern lv_obj_t * ui_ValueLastUpdate;
-extern lv_obj_t * ui_ValueDescription;
 extern lv_obj_t * ui_Image1;
 extern lv_obj_t * ui_ValueDate;
 extern lv_obj_t * ui_ValueTime;
+extern lv_obj_t * ui_ValueLastUpdate;
 extern lv_obj_t * ui_TabPageSettings;
 extern lv_obj_t * ui_DayLight;
 extern lv_obj_t * ui____initial_actions0;
