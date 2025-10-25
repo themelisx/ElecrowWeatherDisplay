@@ -86,8 +86,6 @@ lv_img_dsc_t img_dsc;
 bool ntpIsOk = false;
 long valuesNeedsUpdateCheck;
 bool valuesNeedsUpdate = false;
-bool radioNeedsUpdate;
-bool multimediaNeedsUpdate;
 
 long now;
 
@@ -623,8 +621,6 @@ bool getData() {
 }
 
 void setup() {
-
-  radioNeedsUpdate = false;
 
   // Allocate memory for the buffer
   imageBuffer = (uint8_t *)malloc(bufferSize + 1000);
