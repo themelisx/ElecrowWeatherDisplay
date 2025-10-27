@@ -42,6 +42,7 @@ String myAPI = USER_WeatherAPI;
 String units = USER_WeatherUnits; 
 /////////////////////////////////
 
+// Calendar days and months
 #if defined(LANG_EN)
 static const char *days[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 static const char *months[] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -54,14 +55,20 @@ static const char *months[] = {"Ιαν", "Φεβ", "Μαρ", "Απρ", "Μαι",
     #error "No Language defined!"
 #endif
 
+// Weather Image
 #define IMG_WIDTH 200
 #define IMG_HEIGHT 200
 #define PNG_PIXELS_PER_LINE  2048
 PNG png;
 uint8_t *imageBuffer = nullptr;
 uint16_t *rgb565_buffer = nullptr;
+int bufferSize = IMG_WIDTH * IMG_HEIGHT * 2;
+lv_img_dsc_t img_dsc;
 
+// NTP
 const char* ntpServer = "pool.ntp.org";
+
+// OpenWeather server
 String server = "https://api.openweathermap.org/data/2.5/weather?q=" + town + "&appid=" + myAPI + "&units=" + units;
 
 ESP32Time rtc(0);
@@ -69,19 +76,17 @@ char time_str[9];
 
 uint8_t WiFiChannel;
 
+// OpenWeather
 float windSpeed;
 int windDirection;
 long sun[2];
 float temperature[4];
 int humidity;
 int pressure;
-int visibility;
-bool SpiMounted = false;
-String description;
+//int visibility;
+//String description;
 String lastUpdate = "";
 String oldIconUrl = "";
-int bufferSize = IMG_WIDTH * IMG_HEIGHT * 2;
-lv_img_dsc_t img_dsc;
 
 bool ntpIsOk = false;
 long valuesNeedsUpdateCheck;
@@ -101,11 +106,7 @@ long now;
   
 #endif
 
-unsigned long previousBlinkTime;
-int blinkInterval = 15000;
-
 char tmp_buf[100];
-unsigned long timerDelay = 5000;
 
 TwoWire I2Cone = TwoWire(0);
 Adafruit_SSD1306 display = Adafruit_SSD1306(128, 64, &I2Cone,OLED_RESET);
@@ -113,7 +114,6 @@ Adafruit_SSD1306 display = Adafruit_SSD1306(128, 64, &I2Cone,OLED_RESET);
 SPIClass& spi = SPI;
 uint16_t touchCalibration_x0 = 300, touchCalibration_x1 = 3600, touchCalibration_y0 = 300, touchCalibration_y1 = 3600;
 uint8_t  touchCalibration_rotate = 1, touchCalibration_invert_x = 2, touchCalibration_invert_y = 0;
-static int val = 100;
 
 static uint32_t screenWidth;
 static uint32_t screenHeight;
@@ -326,13 +326,16 @@ void initializeLVGL() {
 
 void updateLastUpdate(const char *str, uint32_t color) {
   if (color == COLOR_RED) { // Error
-    sprintf(tmp_buf, "Updated: %s", lastUpdate);
+    #if defined(LANG_EN)
+      sprintf(tmp_buf, "Last update: %s", lastUpdate);
+    #elif defined(LANG_GR)
+      sprintf(tmp_buf, "Τελευταία ενημέρωση: %s", lastUpdate);
+    #endif    
     lv_label_set_text(ui_ValueLastUpdate, tmp_buf);
   } else {
     lv_label_set_text(ui_ValueLastUpdate, str);  
   }
   lv_obj_set_style_text_color(ui_ValueLastUpdate, lv_color_hex(color), LV_PART_MAIN | LV_STATE_DEFAULT);
-  
 }
 
 bool setTime() {
@@ -582,8 +585,8 @@ bool getData() {
             sun[0] = doc["sys"]["sunrise"];
             sun[1] = doc["sys"]["sunset"];
 
-            visibility = doc["visibility"];
-            description = doc["weather"][0]["description"].as<String>();
+            //visibility = doc["visibility"];
+            //description = doc["weather"][0]["description"].as<String>();
 
             String iconUrl =
                 "https://openweathermap.org/img/wn/" +
