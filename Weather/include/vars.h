@@ -6,23 +6,21 @@
 #include "debug.h"
 #include "structs.h"
 #include "settings.h"
+#include "openWeather.h"
+#include "uiManager.h"
+#include "myClock.h"
+#include "myWiFi.h"
 
-#ifdef USE_MULTI_THREAD
-    extern SemaphoreHandle_t semaphoreData;
-
-    extern TaskHandle_t t_core1_http;
-    extern TaskHandle_t t_core1_ntp;
-    extern TaskHandle_t t_core1_loop;
-
-    extern bool setTime();
-    extern bool getData();
-    extern void updateLastUpdate(const char *str, uint32_t color);
-    extern bool valuesNeedsUpdate;
-    extern bool ntpIsOk;
-
-#endif
+extern void createTasks();
 
 extern Debug *debug;
 extern Settings *mySettings;
+extern UIManager *uiManager;
+extern MyClock *myClock;
+extern MyWiFi *myWiFi;
+#ifdef USE_OPEN_WEATHER
+extern OpenWeather *openWeather;
+extern TaskHandle_t t_core1_openWeather;
+#endif
 
 #endif

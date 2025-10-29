@@ -34,7 +34,16 @@
 #define LCD_Backlight	2
 
 // Other defines
+#define DELAY_LVGL_TASK 10
 #define DELAY_MAIN_TASK 500
+#define DELAY_CLOCK_TASK 1000
+#define DELAY_NTP_TASK 30000
+#define DELAY_WIFI_RECONNECT_TASK 5000
+// every 5 minutes on success
+#define DELAY_OPEN_WEATHER_TASK 300000
+// every 1 minute on failure
+#define DELAY_OPEN_WEATHER_SHORT_TASK 60000
+
 #define OLED_RESET     -1 
 
 #define TFT_BL 2

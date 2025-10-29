@@ -17,7 +17,6 @@ Settings::Settings() {
   #ifdef ENABLE_EEPROM
     myEEPROM = new MyEEPROM(512);
     myEEPROM->start();
-    debug->println(DEBUG_LEVEL_DEBUG, "[OK]");
   #endif
 }
 
