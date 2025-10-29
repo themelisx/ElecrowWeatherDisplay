@@ -23,7 +23,7 @@ void createTasks() {
     NULL,           // Parameter of the task
     4,              // Priority of the task
     &t_core1_clock,  // Task handle to keep track of created task
-    0);             // Pin task to core 0
+    1);             // Pin task to core 0
 
   #ifdef USE_OPEN_WEATHER
   xTaskCreatePinnedToCore(
@@ -33,7 +33,7 @@ void createTasks() {
     NULL,           // Parameter of the task
     3,              // Priority of the task
     &t_core1_openWeather,  // Task handle to keep track of created task
-    0);             // Pin task to core 0
+    1);             // Pin task to core 0
 
   #endif
 
