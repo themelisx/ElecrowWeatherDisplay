@@ -12,12 +12,12 @@
 //#define MODE_RELEASE_INFO
 //#define MODE_RELEASE
 
-// Multithread
-#define USE_MULTI_THREAD
-
 // Language
 //#define LANG_EN
 #define LANG_GR
+
+// Get data from OpenWeather
+#define USE_OPEN_WEATHER
 
 ////////////
 // EEPROM //

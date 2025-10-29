@@ -15,7 +15,6 @@ MyEEPROM::MyEEPROM(int eepromSize) {
     debug->println(DEBUG_LEVEL_DEBUG, "[EEPROM]");
     this->size = eepromSize;
     active = false;
-    debug->println(DEBUG_LEVEL_DEBUG, "[OK]");
 };
 
 bool MyEEPROM::start() {
