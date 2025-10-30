@@ -16,13 +16,13 @@
 #include "../lvgl/lvgl.h"
 
 #include "../include/defines.h"
-#include "../include/debug.h"
+#include "MyDebug.h"
 #include "../include/structs.h"
 #include "../include/settings.h"
 #include "../include/openWeather.h"
 #include "../include/uiManager.h"
 #include "../include/myClock.h"
-#include "../include/myWiFi.h"
+#include "MyWiFi.h"
 #include "../include/externals.h"
 
 ////////////////
@@ -53,7 +53,7 @@ static lv_disp_draw_buf_t draw_buf;
 static lv_color_t disp_draw_buf[800 * 480 / 10];
 static lv_disp_drv_t disp_drv;
 
-Debug *debug;
+MyDebug *myDebug;
 MyClock *myClock;
 Settings *mySettings;
 UIManager *uiManager;
@@ -86,10 +86,10 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
       data->point.x = touch_last_x;
       data->point.y = touch_last_y;
       #ifndef MODE_RELEASE
-        debug->print(DEBUG_LEVEL_DEBUG2, "Data x :" );
-        debug->println(DEBUG_LEVEL_DEBUG2, touch_last_x );
-        debug->print(DEBUG_LEVEL_DEBUG2, "Data y :" );
-        debug->println(DEBUG_LEVEL_DEBUG2, touch_last_y );
+        myDebug->print(DEBUG_LEVEL_DEBUG2, "Data x :" );
+        myDebug->println(DEBUG_LEVEL_DEBUG2, touch_last_x );
+        myDebug->print(DEBUG_LEVEL_DEBUG2, "Data y :" );
+        myDebug->println(DEBUG_LEVEL_DEBUG2, touch_last_y );
       #endif
     }
     else if (touch_released()) {
@@ -104,7 +104,7 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
 
 void initializeUI() {  
 
-  debug->println(DEBUG_LEVEL_INFO, "initialize UI...");  
+  myDebug->println(DEBUG_LEVEL_INFO, "initialize UI...");  
   ui_init();
 
   uiManager = new UIManager();
@@ -112,7 +112,7 @@ void initializeUI() {
 }
 
 void configureDisplay() {
-  debug->println(DEBUG_LEVEL_INFO, "Configuring display...");
+  myDebug->println(DEBUG_LEVEL_INFO, "Configuring display...");
 
   screenWidth = lcd.width();
   screenHeight = lcd.height();
@@ -143,7 +143,7 @@ void configureDisplay() {
 }
 
 void initializeDisplay() {
-  debug->println(DEBUG_LEVEL_INFO, "Initializing display...");
+  myDebug->println(DEBUG_LEVEL_INFO, "Initializing display...");
   lcd.begin();
   lcd.fillScreen(0x000000u);
   lcd.setTextSize(2); 
@@ -162,27 +162,27 @@ void initializeSettings() {
 
 void initializeDebug() {
   // Initialize Serial and set debug level
-  debug = new Debug();
+  myDebug = new MyDebug();
   #if defined(MODE_DEBUG_FULL)
-    debug->start(115200, DEBUG_LEVEL_DEBUG2);
+    myDebug->start(115200, DEBUG_LEVEL_DEBUG2);
   #elif defined(MODE_DEBUG)
-    debug->start(115200, DEBUG_LEVEL_DEBUG);
+    myDebug->start(115200, DEBUG_LEVEL_DEBUG);
   #elif defined(MODE_RELEASE_INFO)
-    debug->start(115200, DEBUG_LEVEL_INFO);
+    myDebug->start(115200, DEBUG_LEVEL_INFO);
   #elif defined(MODE_RELEASE)
-    debug->start(115200, DEBUG_LEVEL_NONE);
+    myDebug->start(115200, DEBUG_LEVEL_NONE);
   #else
     #error "Select build mode for logs"
   #endif  
 }
 
 void initializeTouchScreen() {
-  debug->println(DEBUG_LEVEL_INFO, "Initializing touch screen...");
+  myDebug->println(DEBUG_LEVEL_INFO, "Initializing touch screen...");
   touch_init();
 }
 
 void initializeLVGL() {
-  debug->println(DEBUG_LEVEL_INFO, "Initializing LVGL...");
+  myDebug->println(DEBUG_LEVEL_INFO, "Initializing LVGL...");
   lv_init();
 }
 
@@ -210,7 +210,7 @@ void initializeWiFi() {
 void setup() {
 
   initializeDebug(); 
-  debug->println(DEBUG_LEVEL_INFO, "Staring up...");
+  myDebug->println(DEBUG_LEVEL_INFO, "Staring up...");
 
   initializeWiFi();
   initializeDisplay();  
@@ -227,7 +227,7 @@ void setup() {
 
   createTasks();
   
-  debug->println(DEBUG_LEVEL_INFO, "Setup completed");
+  myDebug->println(DEBUG_LEVEL_INFO, "Setup completed");
 
   if (mySettings->IsDayLight()) {
     lv_obj_add_state(ui_DayLight, LV_STATE_CHECKED);

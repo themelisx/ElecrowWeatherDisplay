@@ -2,17 +2,17 @@
 
 #include "defines.h"
 #include "vars.h"
-#include "debug.h"
+#include <MyDebug.h>
 #include "myClock.h"
 #include "user_setup.h"
 
 MyClock::MyClock() {
-  debug->println(DEBUG_LEVEL_DEBUG, "[Clock]");
+  myDebug->println(DEBUG_LEVEL_DEBUG, "[Clock]");
   
 }
 
 void MyClock::init() {
-  debug->println(DEBUG_LEVEL_DEBUG, "Initializing Clock");  
+  myDebug->println(DEBUG_LEVEL_DEBUG, "Initializing Clock");  
   // time zone  
   zone = USER_TimeZone;
   // NTP
@@ -24,7 +24,7 @@ void MyClock::init() {
 }
 
 bool MyClock::setTimeFromNTP() {
-  debug->println(DEBUG_LEVEL_DEBUG, "Getting time from NTP...");
+  myDebug->println(DEBUG_LEVEL_DEBUG, "Getting time from NTP...");
 
   xSemaphoreTake(semaphoreData, portMAX_DELAY);
   if (mySettings->IsDayLight()) {
@@ -36,11 +36,11 @@ bool MyClock::setTimeFromNTP() {
   if (getLocalTime(&timeinfo)) {
     rtc.setTimeStruct(timeinfo);
     xSemaphoreGive(semaphoreData);
-    debug->println(DEBUG_LEVEL_DEBUG, "NTP Ok");
+    myDebug->println(DEBUG_LEVEL_DEBUG, "NTP Ok");
     return true;
   } else {
     xSemaphoreGive(semaphoreData);
-    debug->println(DEBUG_LEVEL_ERROR, "NTP Failed");
+    myDebug->println(DEBUG_LEVEL_ERROR, "NTP Failed");
     return false;
   }
 }

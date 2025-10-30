@@ -4,7 +4,7 @@
 #include "defines.h"
 #include "vars.h"
 
-#include "debug.h"
+#include <MyDebug.h>
 #include "uiManager.h"
 
 #if defined(LANG_GR)
@@ -19,7 +19,7 @@ const char *UIManager::months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 UIManager::UIManager() {
 
-  debug->println(DEBUG_LEVEL_DEBUG, "[UIManager]");
+  myDebug->println(DEBUG_LEVEL_DEBUG, "[UIManager]");
   tmp_buf = (char*)malloc(128);
 
 }
@@ -128,7 +128,7 @@ void UIManager::updateValues() {
 
   #if defined(USE_OPEN_WEATHER)
     if (openWeather->isDataUpdated()) {
-      debug->println(DEBUG_LEVEL_DEBUG, "Updating openWeather UI values");
+      myDebug->println(DEBUG_LEVEL_DEBUG, "Updating openWeather UI values");
       s_openWeatherData data = openWeather->getData();
       openWeather->setDataUpdated(false);
 

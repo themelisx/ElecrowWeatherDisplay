@@ -3,15 +3,15 @@
 #include "defines.h"
 
 #ifdef USE_OPEN_WEATHER
-#include "debug.h"
+#include <MyDebug.h>
 #include "vars.h"
 
 void openWeather_task(void *pvParameters) {
   
   vTaskSuspend(NULL);
 
-  debug->print(DEBUG_LEVEL_INFO, "openWeather manager: Task running on core ");
-  debug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
+  myDebug->print(DEBUG_LEVEL_INFO, "openWeather manager: Task running on core ");
+  myDebug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
 
   int errors = 0;
 
@@ -24,7 +24,7 @@ void openWeather_task(void *pvParameters) {
         vTaskDelay(DELAY_OPEN_WEATHER_SHORT_TASK / portTICK_PERIOD_MS);
       }
     } else {
-      debug->println(DEBUG_LEVEL_DEBUG, "No internet connection");
+      myDebug->println(DEBUG_LEVEL_DEBUG, "No internet connection");
       vTaskDelay(DELAY_WIFI_RECONNECT_TASK / portTICK_PERIOD_MS);
     }
   }

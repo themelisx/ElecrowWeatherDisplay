@@ -1,11 +1,11 @@
 #include <Arduino.h>
 #include "defines.h"
 #include "tasks.h"
-#include "debug.h"
+#include <MyDebug.h>
 #include "vars.h"
 
 void createTasks() {
-  debug->println(DEBUG_LEVEL_INFO, "Creating Tasks...");
+  myDebug->println(DEBUG_LEVEL_INFO, "Creating Tasks...");
 
   xTaskCreatePinnedToCore(
     lvgl_task,       // Task function.
@@ -37,7 +37,7 @@ void createTasks() {
 
   #endif
 
-  debug->println(DEBUG_LEVEL_INFO, "All tasks created\nStarting tasks...");
+  myDebug->println(DEBUG_LEVEL_INFO, "All tasks created\nStarting tasks...");
 
   vTaskResume(t_core1_lvgl);  
   vTaskResume(t_core1_clock);  

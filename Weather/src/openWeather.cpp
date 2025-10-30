@@ -7,7 +7,7 @@
 #include "vars.h"
 #include "UI/ui.h"
 
-#include "debug.h"
+#include <MyDebug.h>
 #include "user_setup.h"
 #include "myClock.h"
 #include "openWeather.h"
@@ -15,11 +15,11 @@
 #ifdef USE_OPEN_WEATHER
 
 OpenWeather::OpenWeather() {
-  debug->println(DEBUG_LEVEL_DEBUG, "[OpenWeather]");  
+  myDebug->println(DEBUG_LEVEL_DEBUG, "[OpenWeather]");  
 }
 
 void OpenWeather::init() {
-  debug->println(DEBUG_LEVEL_DEBUG, "Initializing OpenWeather");  
+  myDebug->println(DEBUG_LEVEL_DEBUG, "Initializing OpenWeather");  
   dataUpdated = false;
   bufferSize = IMG_WIDTH * IMG_HEIGHT * 2;
   openWeatherServer = "https://api.openweathermap.org/data/2.5/weather?q=" + town + "&appid=" + myAPI + "&units=" + units;
@@ -57,7 +57,7 @@ s_openWeatherData OpenWeather::getData() {
 }
 
 bool OpenWeather::fetchData() {
-  debug->println(DEBUG_LEVEL_DEBUG, "Updating OpenWeather data...");
+  myDebug->println(DEBUG_LEVEL_DEBUG, "Updating OpenWeather data...");
 
   #if defined(LANG_EN)
     uiManager->updateInfo("Updating data...", COLOR_WHITE);    
@@ -70,8 +70,8 @@ bool OpenWeather::fetchData() {
 
   if (httpResponseCode > 0) {
       String payload = http.getString();
-      debug->println(DEBUG_LEVEL_DEBUG2, "server response");
-      debug->println(DEBUG_LEVEL_DEBUG2, payload);
+      myDebug->println(DEBUG_LEVEL_DEBUG2, "server response");
+      myDebug->println(DEBUG_LEVEL_DEBUG2, payload);
 
       JsonDocument doc;
       DeserializationError error = deserializeJson(doc, payload);
@@ -103,9 +103,9 @@ bool OpenWeather::fetchData() {
           http.end();
 
           if (imageBuffer != nullptr) {
-              debug->println(DEBUG_LEVEL_DEBUG, iconUrl);
+              myDebug->println(DEBUG_LEVEL_DEBUG, iconUrl);
               if (!iconUrl.equals(oldIconUrl)) {
-                  debug->println(DEBUG_LEVEL_DEBUG, "icon is different");
+                  myDebug->println(DEBUG_LEVEL_DEBUG, "icon is different");
                   oldIconUrl = iconUrl;
                   downloadImageToMemory(iconUrl.c_str());
               }
@@ -113,14 +113,14 @@ bool OpenWeather::fetchData() {
           return true;
       } else {
           http.end();
-          debug->println(DEBUG_LEVEL_ERROR, "ERROR JSON: ");
-          debug->println(DEBUG_LEVEL_ERROR, error.c_str());
+          myDebug->println(DEBUG_LEVEL_ERROR, "ERROR JSON: ");
+          myDebug->println(DEBUG_LEVEL_ERROR, error.c_str());
           return false;
       }
   } else {
       http.end();
-      debug->println(DEBUG_LEVEL_ERROR, "HTTP ERROR ");
-      debug->println(DEBUG_LEVEL_ERROR, httpResponseCode);
+      myDebug->println(DEBUG_LEVEL_ERROR, "HTTP ERROR ");
+      myDebug->println(DEBUG_LEVEL_ERROR, httpResponseCode);
       return false;
   }
 }
@@ -150,15 +150,15 @@ bool OpenWeather::decodePngToRgb565(uint8_t *png_data, int png_size) {
         png.close();
         return true;
     } else {
-        debug->print(DEBUG_LEVEL_ERROR, "PNG decode failed, code = ");
-        debug->println(DEBUG_LEVEL_ERROR, rc);
+        myDebug->print(DEBUG_LEVEL_ERROR, "PNG decode failed, code = ");
+        myDebug->println(DEBUG_LEVEL_ERROR, rc);
         return false;
     }
 }
 
 void OpenWeather::downloadImageToMemory(const char *url) {
-  debug->print(DEBUG_LEVEL_DEBUG, "image url: ");
-  debug->println(DEBUG_LEVEL_DEBUG, url);
+  myDebug->print(DEBUG_LEVEL_DEBUG, "image url: ");
+  myDebug->println(DEBUG_LEVEL_DEBUG, url);
 
   WiFiClient client;
   HTTPClient http;
@@ -168,7 +168,7 @@ void OpenWeather::downloadImageToMemory(const char *url) {
     if (httpCode == HTTP_CODE_OK) {
       int totalSize = http.getSize();
       if (totalSize > bufferSize) {
-        debug->println(DEBUG_LEVEL_ERROR, "Image size exceeds buffer size");
+        myDebug->println(DEBUG_LEVEL_ERROR, "Image size exceeds buffer size");
       } else {
         WiFiClient *stream = http.getStreamPtr();
         int bytesRead = 0;
@@ -183,11 +183,11 @@ void OpenWeather::downloadImageToMemory(const char *url) {
             delay(1);
         }
 
-        debug->print(DEBUG_LEVEL_DEBUG, bytesRead);
-        debug->println(DEBUG_LEVEL_DEBUG, " bytes downloaded");
+        myDebug->print(DEBUG_LEVEL_DEBUG, bytesRead);
+        myDebug->println(DEBUG_LEVEL_DEBUG, " bytes downloaded");
 
         if (bytesRead != -1) {
-              debug->println(DEBUG_LEVEL_DEBUG, "updating icon...");
+              myDebug->println(DEBUG_LEVEL_DEBUG, "updating icon...");
               if (decodePngToRgb565(imageBuffer, bytesRead)) {
                   int w = png.getWidth();
                   int h = png.getHeight();
@@ -203,8 +203,8 @@ void OpenWeather::downloadImageToMemory(const char *url) {
             }
       }
     } else {
-      debug->println(DEBUG_LEVEL_ERROR, "Failed to download image");
-      debug->println(DEBUG_LEVEL_ERROR, http.errorToString(httpCode).c_str());
+      myDebug->println(DEBUG_LEVEL_ERROR, "Failed to download image");
+      myDebug->println(DEBUG_LEVEL_ERROR, http.errorToString(httpCode).c_str());
     }
 
     http.end();

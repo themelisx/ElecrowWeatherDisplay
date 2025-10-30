@@ -9,25 +9,25 @@
 
 #include "vars.h"
 
-#include "debug.h"
+#include <MyDebug.h>
 
 MyEEPROM::MyEEPROM(int eepromSize) {
-    debug->println(DEBUG_LEVEL_DEBUG, "[EEPROM]");
+    myDebug->println(DEBUG_LEVEL_DEBUG, "[EEPROM]");
     this->size = eepromSize;
     active = false;
 };
 
 bool MyEEPROM::start() {
-  debug->print(DEBUG_LEVEL_INFO, "Starting EEPROM with ");
-  debug->print(DEBUG_LEVEL_INFO, this->size);
-  debug->println(DEBUG_LEVEL_INFO, " bytes... ");
+  myDebug->print(DEBUG_LEVEL_INFO, "Starting EEPROM with ");
+  myDebug->print(DEBUG_LEVEL_INFO, this->size);
+  myDebug->println(DEBUG_LEVEL_INFO, " bytes... ");
   
   #ifdef ESP32  
     if (EEPROM.begin(this->size)) {
-      debug->println(DEBUG_LEVEL_INFO, "Done");
+      myDebug->println(DEBUG_LEVEL_INFO, "Done");
       active = true;
     } else {
-      debug->println(DEBUG_LEVEL_ERROR, "Failed");
+      myDebug->println(DEBUG_LEVEL_ERROR, "Failed");
       active = false;
     }    
   #endif
@@ -42,22 +42,22 @@ bool MyEEPROM::start() {
 void MyEEPROM::showOutOfBoundsError(int address, int size) {
 
   showOutOfBoundsError(address);
-  debug->print(DEBUG_LEVEL_ERROR, "Out of bounds (size): ");
-  debug->println(DEBUG_LEVEL_ERROR, size);
+  myDebug->print(DEBUG_LEVEL_ERROR, "Out of bounds (size): ");
+  myDebug->println(DEBUG_LEVEL_ERROR, size);
 }
 
 void MyEEPROM::showOutOfBoundsError(int address) {
 
-  debug->print(DEBUG_LEVEL_ERROR, "Cannot access EEPROM at address ");
-  debug->println(DEBUG_LEVEL_ERROR, address);  
+  myDebug->print(DEBUG_LEVEL_ERROR, "Cannot access EEPROM at address ");
+  myDebug->println(DEBUG_LEVEL_ERROR, address);  
 }
 
 void MyEEPROM::showNotActive() {
-  debug->println(DEBUG_LEVEL_ERROR, "EEPROM module is not active. Aborting");
+  myDebug->println(DEBUG_LEVEL_ERROR, "EEPROM module is not active. Aborting");
 }
 
 void MyEEPROM::createSignature() {
-  debug->println(DEBUG_LEVEL_DEBUG, "Creating signature to EEPROM...");
+  myDebug->println(DEBUG_LEVEL_DEBUG, "Creating signature to EEPROM...");
 
   if (!active) {
     showNotActive();
@@ -67,9 +67,9 @@ void MyEEPROM::createSignature() {
   EEPROM.write(0, 'T');
   EEPROM.write(1, 'C');
   if (EEPROM.commit()) {
-    debug->println(DEBUG_LEVEL_DEBUG, "Done");
+    myDebug->println(DEBUG_LEVEL_DEBUG, "Done");
   } else {
-    debug->println(DEBUG_LEVEL_ERROR, "Cannot write to EEPROM");
+    myDebug->println(DEBUG_LEVEL_ERROR, "Cannot write to EEPROM");
   }
 }
 
