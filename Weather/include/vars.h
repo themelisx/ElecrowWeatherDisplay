@@ -3,17 +3,17 @@
 
 #include <Arduino.h>
 
-#include "debug.h"
+#include <MyDebug.h>
 #include "structs.h"
 #include "settings.h"
 #include "openWeather.h"
 #include "uiManager.h"
 #include "myClock.h"
-#include "myWiFi.h"
+#include <MyWiFi.h>
 
 extern void createTasks();
 
-extern Debug *debug;
+extern MyDebug *myDebug;
 extern Settings *mySettings;
 extern UIManager *uiManager;
 extern MyClock *myClock;

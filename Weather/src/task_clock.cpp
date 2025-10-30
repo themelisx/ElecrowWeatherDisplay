@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 #include "defines.h"
-#include "debug.h"
+#include <MyDebug.h>
 #include "vars.h"
 
 extern void ensureWiFiConnected(bool forceCheck);
@@ -10,8 +10,8 @@ void clock_task(void *pvParameters) {
 
   vTaskSuspend(NULL);
 
-  debug->print(DEBUG_LEVEL_INFO, "Clock manager: Task running on core ");
-  debug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
+  myDebug->print(DEBUG_LEVEL_INFO, "Clock manager: Task running on core ");
+  myDebug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
 
   bool ntpResult = false;
   
@@ -29,7 +29,7 @@ void clock_task(void *pvParameters) {
         uiManager->updateInfo("", COLOR_WHITE);
       }      
     } else {
-      debug->println(DEBUG_LEVEL_DEBUG, "No internet connection");
+      myDebug->println(DEBUG_LEVEL_DEBUG, "No internet connection");
       vTaskDelay(DELAY_WIFI_RECONNECT_TASK / portTICK_PERIOD_MS);
     }
     
