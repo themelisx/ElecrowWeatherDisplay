@@ -86,10 +86,8 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
       data->point.x = touch_last_x;
       data->point.y = touch_last_y;
       #ifndef MODE_RELEASE
-        myDebug->print(DEBUG_LEVEL_DEBUG2, "Data x :" );
-        myDebug->println(DEBUG_LEVEL_DEBUG2, touch_last_x );
-        myDebug->print(DEBUG_LEVEL_DEBUG2, "Data y :" );
-        myDebug->println(DEBUG_LEVEL_DEBUG2, touch_last_y );
+        myDebug->println(DEBUG_LEVEL_DEBUG2, "Data x: %d", touch_last_x);
+        myDebug->println(DEBUG_LEVEL_DEBUG2, "Data y: %d", touch_last_y );
       #endif
     }
     else if (touch_released()) {

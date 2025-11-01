@@ -8,8 +8,7 @@ void lvgl_task(void *pvParameters) {
 
   vTaskSuspend(NULL);
 
-  myDebug->print(DEBUG_LEVEL_INFO, "UI manager: Task running on core ");
-  myDebug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
+  myDebug->println(DEBUG_LEVEL_INFO, "UI manager: Task running on core %d", xPortGetCoreID());
 
   while (1) {    
     lv_timer_handler();

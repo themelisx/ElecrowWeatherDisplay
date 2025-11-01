@@ -18,9 +18,7 @@ MyEEPROM::MyEEPROM(int eepromSize) {
 };
 
 bool MyEEPROM::start() {
-  myDebug->print(DEBUG_LEVEL_INFO, "Starting EEPROM with ");
-  myDebug->print(DEBUG_LEVEL_INFO, this->size);
-  myDebug->println(DEBUG_LEVEL_INFO, " bytes... ");
+  myDebug->println(DEBUG_LEVEL_INFO, "Starting EEPROM with %d bytes", this->size);
   
   #ifdef ESP32  
     if (EEPROM.begin(this->size)) {
@@ -42,14 +40,12 @@ bool MyEEPROM::start() {
 void MyEEPROM::showOutOfBoundsError(int address, int size) {
 
   showOutOfBoundsError(address);
-  myDebug->print(DEBUG_LEVEL_ERROR, "Out of bounds (size): ");
-  myDebug->println(DEBUG_LEVEL_ERROR, size);
+  myDebug->println(DEBUG_LEVEL_ERROR, "Out of bounds (size): %d", size);
 }
 
 void MyEEPROM::showOutOfBoundsError(int address) {
 
-  myDebug->print(DEBUG_LEVEL_ERROR, "Cannot access EEPROM at address ");
-  myDebug->println(DEBUG_LEVEL_ERROR, address);  
+  myDebug->println(DEBUG_LEVEL_ERROR, "Cannot access EEPROM at address %d", address);
 }
 
 void MyEEPROM::showNotActive() {

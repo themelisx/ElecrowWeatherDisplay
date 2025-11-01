@@ -119,8 +119,7 @@ bool OpenWeather::fetchData() {
       }
   } else {
       http.end();
-      myDebug->println(DEBUG_LEVEL_ERROR, "HTTP ERROR ");
-      myDebug->println(DEBUG_LEVEL_ERROR, httpResponseCode);
+      myDebug->println(DEBUG_LEVEL_ERROR, "HTTP ERROR %d", httpResponseCode);
       return false;
   }
 }
@@ -150,15 +149,13 @@ bool OpenWeather::decodePngToRgb565(uint8_t *png_data, int png_size) {
         png.close();
         return true;
     } else {
-        myDebug->print(DEBUG_LEVEL_ERROR, "PNG decode failed, code = ");
-        myDebug->println(DEBUG_LEVEL_ERROR, rc);
+        myDebug->println(DEBUG_LEVEL_ERROR, "PNG decode failed, code = %d", rc);
         return false;
     }
 }
 
 void OpenWeather::downloadImageToMemory(const char *url) {
-  myDebug->print(DEBUG_LEVEL_DEBUG, "image url: ");
-  myDebug->println(DEBUG_LEVEL_DEBUG, url);
+  myDebug->println(DEBUG_LEVEL_DEBUG, "image url: %s", url);
 
   WiFiClient client;
   HTTPClient http;
@@ -183,8 +180,7 @@ void OpenWeather::downloadImageToMemory(const char *url) {
             delay(1);
         }
 
-        myDebug->print(DEBUG_LEVEL_DEBUG, bytesRead);
-        myDebug->println(DEBUG_LEVEL_DEBUG, " bytes downloaded");
+        myDebug->println(DEBUG_LEVEL_DEBUG, "%d bytes downloaded", bytesRead);
 
         if (bytesRead != -1) {
               myDebug->println(DEBUG_LEVEL_DEBUG, "updating icon...");

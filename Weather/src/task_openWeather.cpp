@@ -10,8 +10,7 @@ void openWeather_task(void *pvParameters) {
   
   vTaskSuspend(NULL);
 
-  myDebug->print(DEBUG_LEVEL_INFO, "openWeather manager: Task running on core ");
-  myDebug->println(DEBUG_LEVEL_INFO, xPortGetCoreID());
+  myDebug->println(DEBUG_LEVEL_INFO, "openWeather manager: Task running on core %d", xPortGetCoreID());
 
   int errors = 0;
 
