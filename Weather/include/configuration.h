@@ -18,12 +18,3 @@
 
 // Get data from OpenWeather
 #define USE_OPEN_WEATHER
-
-////////////
-// EEPROM //
-////////////
-// Enable EEPROM to save settings in EEPROM
-#define ENABLE_EEPROM
-// In case you want to clear the EEPROM, enable CLEAR_SETTINGS and run one.
-// Then comment out and run again
-// #define CLEAR_SETTINGS

@@ -4,8 +4,8 @@
 #include <Arduino.h>
 
 #include <MyDebug.h>
+#include "mySettings.h"
 #include "structs.h"
-#include "settings.h"
 #include "openWeather.h"
 #include "uiManager.h"
 #include "myClock.h"
@@ -14,7 +14,7 @@
 extern void createTasks();
 
 extern MyDebug *myDebug;
-extern Settings *mySettings;
+extern MySettings *mySettings;
 extern UIManager *uiManager;
 extern MyClock *myClock;
 extern MyWiFi *myWiFi;
