@@ -4,8 +4,6 @@
 #include <MyDebug.h>
 #include "vars.h"
 
-extern void ensureWiFiConnected(bool forceCheck);
-
 void clock_task(void *pvParameters) {
 
   vTaskSuspend(NULL);

@@ -18,11 +18,11 @@
 #include "../include/defines.h"
 #include "MyDebug.h"
 #include "../include/structs.h"
-#include "../include/settings.h"
 #include "../include/openWeather.h"
 #include "../include/uiManager.h"
 #include "../include/myClock.h"
 #include "MyWiFi.h"
+#include "mySettings.h"
 #include "../include/externals.h"
 
 ////////////////
@@ -36,7 +36,7 @@ char WiFiPassword[] = USER_WiFiPassword;
 
 
 // Common vars
-
+bool isDayLight;
 
 // TFT
 TwoWire I2Cone = TwoWire(0);
@@ -55,7 +55,7 @@ static lv_disp_drv_t disp_drv;
 
 MyDebug *myDebug;
 MyClock *myClock;
-Settings *mySettings;
+MySettings *mySettings;
 UIManager *uiManager;
 MyWiFi *myWiFi;
 #ifdef USE_OPEN_WEATHER
@@ -149,13 +149,8 @@ void initializeDisplay() {
 }
 
 void initializeSettings() {
-  mySettings = new Settings();
-  #ifdef CLEAR_SETTINGS
-    mySettings->setDefaults();
-    mySettings->save();
-  #else
-    mySettings->load();    
-  #endif
+  mySettings = new MySettings();
+  mySettings->start();
 }
 
 void initializeDebug() {
@@ -227,7 +222,7 @@ void setup() {
   
   myDebug->println(DEBUG_LEVEL_INFO, "Setup completed");
 
-  if (mySettings->IsDayLight()) {
+  if (mySettings->readBool(PREF_DAYLIGHT)) {
     lv_obj_add_state(ui_DayLight, LV_STATE_CHECKED);
   } else {
     lv_obj_add_state(ui_DayLight, LV_STATE_DEFAULT);
@@ -235,8 +230,7 @@ void setup() {
 }
 
 void onDayLightPressed(bool pressed) {
-  mySettings->setDayLight(pressed);
-  mySettings->save();
+  mySettings->writeBool(PREF_DAYLIGHT, pressed);
 }
 
 void loop() {

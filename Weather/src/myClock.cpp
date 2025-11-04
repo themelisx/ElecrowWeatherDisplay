@@ -27,9 +27,11 @@ bool MyClock::setTimeFromNTP() {
   myDebug->println(DEBUG_LEVEL_DEBUG, "Getting time from NTP...");
 
   xSemaphoreTake(semaphoreData, portMAX_DELAY);
-  if (mySettings->IsDayLight()) {
+  if (mySettings->readBool(PREF_DAYLIGHT)) {
+    myDebug->println(DEBUG_LEVEL_DEBUG, "Daylight: On");
     configTime(3600 * zone, 3600, ntpServer); // Daylight  
   } else {
+    myDebug->println(DEBUG_LEVEL_DEBUG, "Daylight: Off");
     configTime(3600 * zone, 0, ntpServer); // Winter
   }
   
