@@ -64,12 +64,11 @@ OpenWeather *openWeather;
 LGFX lcd;
 #include "touch.h"
 
-void my_disp_flush(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map)
+void my_disp_flush(lv_display_t * disp, const lv_area_t *area, uint8_t *px_map)
 {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
-  // px_map είναι raw pixel map (here we assume LV_COLOR_DEPTH == 16 => RGB565)
   // Cast to the type LGFX expects for pushImageDMA:
   lcd.pushImageDMA(area->x1, area->y1, w, h, (lgfx::rgb565_t*)px_map);
 
@@ -81,10 +80,8 @@ void my_disp_flush(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map
 /* Input read callback — LVGL v9 signature */
 void my_touchpad_read(lv_indev_t * indev, lv_indev_data_t * data)
 {
-  if (touch_has_signal())
-  {
-    if (touch_touched())
-    {
+  if (touch_has_signal()) {
+    if (touch_touched()) {
       data->state = LV_INDEV_STATE_PR;
       data->point.x = touch_last_x;
       data->point.y = touch_last_y;
@@ -93,13 +90,10 @@ void my_touchpad_read(lv_indev_t * indev, lv_indev_data_t * data)
         myDebug->println(DEBUG_LEVEL_DEBUG2, "Data y: %d", touch_last_y );
       #endif
     }
-    else if (touch_released())
-    {
+    else if (touch_released()) {
       data->state = LV_INDEV_STATE_REL;
     }
-  }
-  else
-  {
+  } else {
     data->state = LV_INDEV_STATE_REL;
   }
   delay(15);
