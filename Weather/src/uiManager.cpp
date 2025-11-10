@@ -64,64 +64,34 @@ void UIManager::timestampToTime(time_t timestamp, char *buffer, size_t buffer_si
 }
 
 const char* UIManager::convertDegreesToDirection(int degrees) {
-    // Normalize degrees to the range [0, 360)
+    // Normalize degrees to [0, 360)
     degrees = degrees % 360;
-
     if (degrees < 0) degrees += 360;
 
-    #if defined(LANG_EN)
-      if (degrees >= 337.5 || degrees < 22.5)  return "N";
-      if (degrees >= 22.5 && degrees < 67.5)   return "NE";
-      if (degrees >= 67.5 && degrees < 112.5)  return "E";
-      if (degrees >= 112.5 && degrees < 157.5) return "SE";
-      if (degrees >= 157.5 && degrees < 202.5) return "S";
-      if (degrees >= 202.5 && degrees < 247.5) return "SW";
-      if (degrees >= 247.5 && degrees < 292.5) return "W";
-      if (degrees >= 292.5 && degrees < 337.5) return "NW";
-    #elif defined(LANG_GR)
-      if (degrees >= 337.5 || degrees < 22.5)  return "Β";
-      if (degrees >= 22.5 && degrees < 67.5)   return "ΒΑ";
-      if (degrees >= 67.5 && degrees < 112.5)  return "Α";
-      if (degrees >= 112.5 && degrees < 157.5) return "ΝΑ";
-      if (degrees >= 157.5 && degrees < 202.5) return "Ν";
-      if (degrees >= 202.5 && degrees < 247.5) return "ΝΔ";
-      if (degrees >= 247.5 && degrees < 292.5) return "Δ";
-      if (degrees >= 292.5 && degrees < 337.5) return "ΒΔ";
-    #else
-        #error "No Language defined!"
-    #endif
-    
+#if defined(LANG_EN)
+    static constexpr const char* dirs[] = {"N", "NE", "E", "SE", "S", "SW", "W", "NW"};
+#elif defined(LANG_GR)
+    static constexpr const char* dirs[] = {"Β", "ΒΑ", "Α", "ΝΑ", "Ν", "ΝΔ", "Δ", "ΒΔ"};
+#else
+    #error "No Language defined!"
+#endif
 
-    return "Unknown"; // In case something unexpected happens
+    // Each direction covers 45°, starting at N = 0°
+    int index = static_cast<int>((degrees + 22.5) / 45.0) % 8;
+    return dirs[index];
 }
 
+
 int UIManager::windSpeedToBeaufort(float speed) {
-    if (speed < 0.5)
-        return 0;
-    else if (speed < 1.5)
-        return 1;
-    else if (speed < 3.3)
-        return 2;
-    else if (speed < 5.5)
-        return 3;
-    else if (speed < 7.9)
-        return 4;
-    else if (speed < 10.7)
-        return 5;
-    else if (speed < 13.8)
-        return 6;
-    else if (speed < 17.1)
-        return 7;
-    else if (speed < 20.7)
-        return 8;
-    else if (speed < 24.4)
-        return 9;
-    else if (speed < 28.4)
-        return 10;
-    else if (speed < 32.6)
-        return 11;
-    else
-        return 12;
+    static const float limits[] = {
+        0.5, 1.5, 3.3, 5.5, 7.9, 10.7,
+        13.8, 17.1, 20.7, 24.4, 28.4, 32.6
+    };
+
+    for (int i = 0; i < 12; ++i)
+        if (speed < limits[i])
+            return i;
+    return 12;
 }
 
 void UIManager::updateValues() {
