@@ -49,9 +49,7 @@ static int val = 100;
 
 static uint32_t screenWidth;
 static uint32_t screenHeight;
-static lv_disp_draw_buf_t draw_buf;
 static lv_color_t disp_draw_buf[800 * 480 / 10];
-static lv_disp_drv_t disp_drv;
 
 MyDebug *myDebug;
 MyClock *myClock;
@@ -66,23 +64,28 @@ OpenWeather *openWeather;
 LGFX lcd;
 #include "touch.h"
 
-/* Display flushing */
-void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
+void my_disp_flush(lv_display_t * disp, const lv_area_t * area, uint8_t * px_map)
 {
   uint32_t w = (area->x2 - area->x1 + 1);
-  uint32_t h = (area->y2 - area->y1 + 1);  
-  lcd.pushImageDMA(area->x1, area->y1, w, h,(lgfx::rgb565_t*)&color_p->full);//
-  lv_disp_flush_ready(disp);
+  uint32_t h = (area->y2 - area->y1 + 1);
 
+  // px_map είναι raw pixel map (here we assume LV_COLOR_DEPTH == 16 => RGB565)
+  // Cast to the type LGFX expects for pushImageDMA:
+  lcd.pushImageDMA(area->x1, area->y1, w, h, (lgfx::rgb565_t*)px_map);
+
+  /* Tell LVGL we're done */
+  lv_display_flush_ready(disp);
 }
 
-void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
-{
-  if (touch_has_signal())  {
-    if (touch_touched()) {
-      data->state = LV_INDEV_STATE_PR;
 
-      /*Set the coordinates*/
+/* Input read callback — LVGL v9 signature */
+void my_touchpad_read(lv_indev_t * indev, lv_indev_data_t * data)
+{
+  if (touch_has_signal())
+  {
+    if (touch_touched())
+    {
+      data->state = LV_INDEV_STATE_PR;
       data->point.x = touch_last_x;
       data->point.y = touch_last_y;
       #ifndef MODE_RELEASE
@@ -90,11 +93,13 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
         myDebug->println(DEBUG_LEVEL_DEBUG2, "Data y: %d", touch_last_y );
       #endif
     }
-    else if (touch_released()) {
+    else if (touch_released())
+    {
       data->state = LV_INDEV_STATE_REL;
     }
   }
-  else {
+  else
+  {
     data->state = LV_INDEV_STATE_REL;
   }
   delay(15);
@@ -115,23 +120,22 @@ void configureDisplay() {
   screenWidth = lcd.width();
   screenHeight = lcd.height();
 
-  lv_disp_draw_buf_init(&draw_buf, disp_draw_buf, NULL, screenWidth * screenHeight / 10);
+  lv_display_t * disp = lv_display_create(screenWidth, screenHeight);
 
-  /* Initialize the display */
-  lv_disp_drv_init(&disp_drv);
-  /* Change the following line to your display resolution */
-  disp_drv.hor_res = screenWidth;
-  disp_drv.ver_res = screenHeight;
-  disp_drv.flush_cb = my_disp_flush;
-  disp_drv.draw_buf = &draw_buf;
-  lv_disp_drv_register(&disp_drv);
+  static lv_color_t *disp_draw_buf = (lv_color_t *)malloc(screenWidth * 10 * sizeof(lv_color_t));
 
-  /* Initialize the (dummy) input device driver */
-  static lv_indev_drv_t indev_drv;
-  lv_indev_drv_init(&indev_drv);
-  indev_drv.type = LV_INDEV_TYPE_POINTER;
-  indev_drv.read_cb = my_touchpad_read;
-  lv_indev_drv_register(&indev_drv);
+  lv_display_set_buffers(disp,
+                        disp_draw_buf,
+                        NULL,
+                        screenWidth * 10 * sizeof(lv_color_t),
+                        LV_DISPLAY_RENDER_MODE_PARTIAL);
+
+  lv_display_set_flush_cb(disp, my_disp_flush);
+
+  lv_indev_t * indev = lv_indev_create();
+  lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
+  lv_indev_set_read_cb(indev, my_touchpad_read);
+
 #ifdef TFT_BL
   pinMode(TFT_BL, OUTPUT);
   digitalWrite(TFT_BL, HIGH);
