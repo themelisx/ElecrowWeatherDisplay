@@ -6,6 +6,11 @@
 #ifndef _SQUARELINE_PROJECT_UI_HELPERS_H
 #define _SQUARELINE_PROJECT_UI_HELPERS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "lvgl.h"
 #include "ui.h"
 
 #define _UI_TEMPORARY_STRING_BUFFER_SIZE 32
@@ -52,12 +57,12 @@ void _ui_keyboard_set_target(lv_obj_t * keyboard, lv_obj_t * textarea);
 #define _UI_MODIFY_FLAG_ADD 0
 #define _UI_MODIFY_FLAG_REMOVE 1
 #define _UI_MODIFY_FLAG_TOGGLE 2
-void _ui_flag_modify(lv_obj_t * target, int32_t flag, int value);
+void _ui_flag_modify(lv_obj_t * target, lv_obj_flag_t flag, int value);
 
 #define _UI_MODIFY_STATE_ADD 0
 #define _UI_MODIFY_STATE_REMOVE 1
 #define _UI_MODIFY_STATE_TOGGLE 2
-void _ui_state_modify(lv_obj_t * target, int32_t state, int value);
+void _ui_state_modify(lv_obj_t * target, lv_state_t state, int value);
 
 #define UI_MOVE_CURSOR_UP 0
 #define UI_MOVE_CURSOR_RIGHT 1
@@ -129,11 +134,13 @@ void _ui_slider_set_text_value(lv_obj_t * trg, lv_obj_t * src, const char * pref
 
 void _ui_checked_set_text_value(lv_obj_t * trg, lv_obj_t * src, const char * txt_on, const char * txt_off);
 
-void _ui_spinbox_step(lv_obj_t * target, int val)
-;
+void _ui_spinbox_step(lv_obj_t * target, int val);
 
 
-void _ui_switch_theme(int val)
-;
+void _ui_switch_theme(int val);
+
+#ifdef __cplusplus
+} /*extern "C"*/
+#endif
 
 #endif

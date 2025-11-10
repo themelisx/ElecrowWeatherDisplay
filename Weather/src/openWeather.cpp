@@ -187,13 +187,11 @@ void OpenWeather::downloadImageToMemory(const char *url) {
               if (decodePngToRgb565(imageBuffer, bytesRead)) {
                   int w = png.getWidth();
                   int h = png.getHeight();
-                  img_dsc.header.always_zero = 0;
                   img_dsc.header.w = w;
                   img_dsc.header.h = h;
                   img_dsc.data_size = bytesRead;
-                  img_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
+                  img_dsc.header.cf = LV_COLOR_FORMAT_RGB565;
                   img_dsc.data = (const uint8_t *)rgb565_buffer;
-
                   lv_img_set_src(ui_Image1, &img_dsc);
               }
             }
