@@ -50,6 +50,8 @@ static int val = 100;
 static uint32_t screenWidth;
 static uint32_t screenHeight;
 static lv_color_t disp_draw_buf[800 * 480 / 10];
+static lv_display_t *disp;
+static lv_indev_t *indev;
 
 MyDebug *myDebug;
 MyClock *myClock;
@@ -64,39 +66,33 @@ OpenWeather *openWeather;
 LGFX lcd;
 #include "touch.h"
 
-void my_disp_flush(lv_display_t * disp, const lv_area_t *area, uint8_t *px_map)
+void my_disp_flush(lv_display_t *disp, const lv_area_t *area, uint8_t *color_p)
 {
   uint32_t w = (area->x2 - area->x1 + 1);
   uint32_t h = (area->y2 - area->y1 + 1);
 
-  // Cast to the type LGFX expects for pushImageDMA:
-  lcd.pushImageDMA(area->x1, area->y1, w, h, (lgfx::rgb565_t*)px_map);
+  lcd.pushImageDMA(area->x1, area->y1, w, h, (lgfx::rgb565_t*)color_p);
 
-  /* Tell LVGL we're done */
   lv_display_flush_ready(disp);
 }
 
-
-/* Input read callback — LVGL v9 signature */
-void my_touchpad_read(lv_indev_t * indev, lv_indev_data_t * data)
+void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data)
 {
   if (touch_has_signal()) {
-    if (touch_touched()) {
-      data->state = LV_INDEV_STATE_PR;
-      data->point.x = touch_last_x;
-      data->point.y = touch_last_y;
-      #ifndef MODE_RELEASE
-        myDebug->println(DEBUG_LEVEL_DEBUG2, "Data x: %d", touch_last_x);
-        myDebug->println(DEBUG_LEVEL_DEBUG2, "Data y: %d", touch_last_y );
-      #endif
-    }
-    else if (touch_released()) {
-      data->state = LV_INDEV_STATE_REL;
-    }
+      if (touch_touched()) {
+          data->state = LV_INDEV_STATE_PR;
+          data->point.x = touch_last_x;
+          data->point.y = touch_last_y;
+          #ifndef MODE_RELEASE
+            myDebug->println(DEBUG_LEVEL_DEBUG2, "Data x: %d", touch_last_x);
+            myDebug->println(DEBUG_LEVEL_DEBUG2, "Data y: %d", touch_last_y );
+          #endif
+      } else if (touch_released()) {
+          data->state = LV_INDEV_STATE_REL;
+      }
   } else {
-    data->state = LV_INDEV_STATE_REL;
+      data->state = LV_INDEV_STATE_REL;
   }
-  delay(15);
 }
 
 void initializeUI() {  
@@ -110,23 +106,24 @@ void initializeUI() {
 
 void configureDisplay() {
   myDebug->println(DEBUG_LEVEL_INFO, "Configuring display...");
-
   screenWidth = lcd.width();
   screenHeight = lcd.height();
 
-  lv_display_t * disp = lv_display_create(screenWidth, screenHeight);
+  // Δημιουργία display
+  disp = lv_display_create(screenWidth, screenHeight);
 
-  static lv_color_t *disp_draw_buf = (lv_color_t *)malloc(screenWidth * 10 * sizeof(lv_color_t));
-
+  // Buffer για partial render (1/10 της οθόνης)
   lv_display_set_buffers(disp,
-                        disp_draw_buf,
-                        NULL,
-                        screenWidth * 10 * sizeof(lv_color_t),
-                        LV_DISPLAY_RENDER_MODE_PARTIAL);
+      disp_draw_buf,
+      NULL,
+      sizeof(disp_draw_buf),
+      LV_DISPLAY_RENDER_MODE_PARTIAL);
 
+  // Flush callback
   lv_display_set_flush_cb(disp, my_disp_flush);
 
-  lv_indev_t * indev = lv_indev_create();
+  // Touch input
+  indev = lv_indev_create();
   lv_indev_set_type(indev, LV_INDEV_TYPE_POINTER);
   lv_indev_set_read_cb(indev, my_touchpad_read);
 
