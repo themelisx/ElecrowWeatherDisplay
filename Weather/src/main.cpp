@@ -34,7 +34,6 @@ char WiFiPassword[] = USER_WiFiPassword;
 /////////////////////////////////
 
 
-
 // Common vars
 bool isDayLight;
 
@@ -104,6 +103,7 @@ void initializeUI() {
 
   myDebug->println(DEBUG_LEVEL_INFO, "initialize UI...");  
   ui_init();
+  setNightMode(false);
 
   uiManager = new UIManager();
   

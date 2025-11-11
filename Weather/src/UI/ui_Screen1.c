@@ -360,4 +360,32 @@ void ui_Screen1_screen_init(void)
     lv_obj_add_event_cb(ui_DayLight, event_handler, LV_EVENT_ALL, NULL);
     lv_obj_add_state(ui_DayLight, LV_STATE_DEFAULT);
 
+    ui_DimOverlay = lv_obj_create(ui_Screen1);
+    lv_obj_remove_style_all(ui_DimOverlay);             // no border/padding
+    lv_obj_set_size(ui_DimOverlay, LV_PCT(100), LV_PCT(100));
+    lv_obj_set_align(ui_DimOverlay, LV_ALIGN_CENTER);
+
+    // black semi transparent background
+    lv_obj_set_style_bg_color(ui_DimOverlay, lv_color_hex(0x000000), 0);
+    lv_obj_set_style_bg_opa(ui_DimOverlay, 0, 0);       // initially "off"
+
+    // Do not block touch/scroll
+    lv_obj_clear_flag(ui_DimOverlay, LV_OBJ_FLAG_CLICKABLE);
+    lv_obj_clear_flag(ui_DimOverlay, LV_OBJ_FLAG_SCROLLABLE);
+    lv_obj_clear_flag(ui_DimOverlay, LV_OBJ_FLAG_SCROLL_CHAIN_HOR);
+    lv_obj_clear_flag(ui_DimOverlay, LV_OBJ_FLAG_SCROLL_CHAIN_VER);
+
+    // always in front
+    lv_obj_move_foreground(ui_DimOverlay);
+
+}
+
+void setNightMode(bool night) {
+
+    if (!ui_DimOverlay) return;
+    if (night) {
+        lv_obj_set_style_bg_opa(ui_DimOverlay, 192, 0);  // 75% dark
+    } else {
+        lv_obj_set_style_bg_opa(ui_DimOverlay, 0, 0);    // none
+    }
 }

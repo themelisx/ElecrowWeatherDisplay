@@ -11,6 +11,7 @@
 
 // SCREEN: ui_Screen1
 void ui_Screen1_screen_init(void);
+lv_obj_t * ui_DimOverlay;
 lv_obj_t * ui_Screen1;
 lv_obj_t * ui_TabView1;
 lv_obj_t * ui_TabPageWeather;
