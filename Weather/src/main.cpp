@@ -100,8 +100,7 @@ void initializeUI() {
   ui_init();
   setNightMode(false);
 
-  uiManager = new UIManager();
-  
+  uiManager = new UIManager();  
 }
 
 void configureDisplay() {

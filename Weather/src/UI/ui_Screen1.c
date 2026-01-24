@@ -365,3 +365,13 @@ void ui_Screen1_screen_init(void)
     lv_obj_add_state(ui_DayLight, LV_STATE_DEFAULT);
 
 }
+
+void setNightMode(bool night) {
+
+    if (!ui_DimOverlay) return;
+    if (night) {
+        lv_obj_set_style_bg_opa(ui_DimOverlay, 192, 0);  // 75% dark
+    } else {
+        lv_obj_set_style_bg_opa(ui_DimOverlay, 0, 0);    // none
+    }
+}
