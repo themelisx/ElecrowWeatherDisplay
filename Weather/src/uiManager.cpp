@@ -45,6 +45,15 @@ void UIManager::updateDateTime(const struct tm timeinfo) {
   strftime(tmp_buf, 50, "%H:%M", &timeinfo);      // 24h format
   //strftime(tmp_buf, 50, "%I:%M %p", &timeinfo); // 12h format
   lv_label_set_text(ui_ValueTime, tmp_buf);
+
+  // TODO: Add to settings "dim at night"
+  // TODO: Add to settings "dim hours"
+  // TODO: Add to settings "dim percentage"
+  if (timeinfo.tm_hour > 21 || timeinfo.tm_hour < 7) {
+    setNightMode(true);
+  } else {
+    setNightMode(false);
+  }
 }
 
 void UIManager::clearDateTime() {

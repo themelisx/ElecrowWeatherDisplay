@@ -28,6 +28,8 @@ extern "C" {
 
 // SCREEN: ui_Screen1
 void ui_Screen1_screen_init(void);
+void setNightMode(bool night);
+extern lv_obj_t * ui_DimOverlay;
 extern lv_obj_t * ui_Screen1;
 extern lv_obj_t * ui_TabView1;
 extern lv_obj_t * ui_TabPageWeather;
