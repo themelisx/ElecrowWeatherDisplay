@@ -98,7 +98,7 @@ bool OpenWeather::fetchData() {
               "https://openweathermap.org/img/wn/" +
               doc["weather"][0]["icon"].as<String>() +
               "@4x.png";
-          iconUrl.replace("https://", "http://");
+          //iconUrl.replace("https://", "http://");
 
           http.end();
 
@@ -157,10 +157,20 @@ bool OpenWeather::decodePngToRgb565(uint8_t *png_data, int png_size) {
 void OpenWeather::downloadImageToMemory(const char *url) {
   myDebug->println(DEBUG_LEVEL_DEBUG, "image url: %s", url);
 
-  WiFiClient client;
+  WiFiClientSecure client;
+  client.setInsecure();
+  client.setHandshakeTimeout(30);
+  client.setCACert(nullptr);
+  client.setTimeout(15000);
+
   HTTPClient http;
+  http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+  http.addHeader("User-Agent", "ESP32");
+
   if (http.begin(client, url)) {
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
     int httpCode = http.GET();
+    myDebug->println(DEBUG_LEVEL_DEBUG, "HTTP code: %d", httpCode);
 
     if (httpCode == HTTP_CODE_OK) {
       int totalSize = http.getSize();
