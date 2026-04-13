@@ -1,5 +1,5 @@
 #include <ArduinoJson.h> 
-
+#include <nvs_flash.h>
 #include <lvgl.h>
 #include <Wire.h>
 #include <WiFi.h>
@@ -195,6 +195,8 @@ void initializeOpenWeather() {
 }
 
 void initializeWiFi() {
+  nvs_flash_erase();
+  nvs_flash_init();
   myWiFi = new MyWiFi();
   myWiFi->init(WIFI_STA, USER_WiFiSSID, USER_WiFiPassword);
   myWiFi->connect();
